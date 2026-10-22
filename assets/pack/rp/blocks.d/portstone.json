@@ -1,0 +1,50 @@
+{
+  "bedstones:white_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:orange_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:magenta_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:light_blue_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:yellow_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:lime_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:pink_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:gray_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:light_gray_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:cyan_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:purple_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:blue_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:brown_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:green_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:red_portstone": {
+    "sound": "stone"
+  },
+  "bedstones:black_portstone": {
+    "sound": "stone"
+  }
+}

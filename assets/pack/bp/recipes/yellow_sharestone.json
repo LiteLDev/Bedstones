@@ -1,0 +1,38 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "bedstones:yellow_sharestone"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "SSS",
+      "DWD",
+      "OOO"
+    ],
+    "key": {
+      "S": {
+        "item": "minecraft:stone_bricks"
+      },
+      "D": {
+        "item": "minecraft:yellow_dye"
+      },
+      "W": {
+        "item": "bedstones:warp_stone"
+      },
+      "O": {
+        "item": "minecraft:obsidian"
+      }
+    },
+    "unlock": [
+      {
+        "item": "bedstones:warp_stone"
+      }
+    ],
+    "result": {
+      "item": "bedstones:yellow_sharestone"
+    }
+  }
+}

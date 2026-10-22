@@ -1,0 +1,50 @@
+{
+  "bs_white_portstone": {
+    "textures": "textures/blocks/portstone/white_portstone"
+  },
+  "bs_orange_portstone": {
+    "textures": "textures/blocks/portstone/orange_portstone"
+  },
+  "bs_magenta_portstone": {
+    "textures": "textures/blocks/portstone/magenta_portstone"
+  },
+  "bs_light_blue_portstone": {
+    "textures": "textures/blocks/portstone/light_blue_portstone"
+  },
+  "bs_yellow_portstone": {
+    "textures": "textures/blocks/portstone/yellow_portstone"
+  },
+  "bs_lime_portstone": {
+    "textures": "textures/blocks/portstone/lime_portstone"
+  },
+  "bs_pink_portstone": {
+    "textures": "textures/blocks/portstone/pink_portstone"
+  },
+  "bs_gray_portstone": {
+    "textures": "textures/blocks/portstone/gray_portstone"
+  },
+  "bs_light_gray_portstone": {
+    "textures": "textures/blocks/portstone/light_gray_portstone"
+  },
+  "bs_cyan_portstone": {
+    "textures": "textures/blocks/portstone/cyan_portstone"
+  },
+  "bs_purple_portstone": {
+    "textures": "textures/blocks/portstone/purple_portstone"
+  },
+  "bs_blue_portstone": {
+    "textures": "textures/blocks/portstone/blue_portstone"
+  },
+  "bs_brown_portstone": {
+    "textures": "textures/blocks/portstone/brown_portstone"
+  },
+  "bs_green_portstone": {
+    "textures": "textures/blocks/portstone/green_portstone"
+  },
+  "bs_red_portstone": {
+    "textures": "textures/blocks/portstone/red_portstone"
+  },
+  "bs_black_portstone": {
+    "textures": "textures/blocks/portstone/black_portstone"
+  }
+}
