@@ -129,3 +129,36 @@ BS_REGISTER_SELFTEST("foundation.default_teleport", [](Context& ctx) -> ll::coro
     ctx.check(std::abs(pos.x - (static_cast<float>(r.pos.x) + 0.5f)) < 1.f, "x in front of the waystone");
     ctx.check(std::abs(pos.z - (static_cast<float>(r.pos.z - 1) + 0.5f)) < 1.f, "z in front of the waystone (north)");
 });
+
+#include "game/BlockContainer.h"
+#include "service/ScreenOpeners.h"
+
+BS_REGISTER_SELFTEST("foundation.container", [](Context& ctx) {
+    auto& rec = ctx.createWaystone(sampleRecord(ctx, 50, "Box"));
+    auto  c   = bs::game::containerOf(rec);
+    ctx.check(!c[0] && !c[4], "empty container by default");
+    c[0] = bs::game::SlotItem{"bedstones:attuned_shard", 1, 0, {{"bs_attunement", "abc"}}};
+    c[2] = bs::game::SlotItem{"minecraft:diamond", 3, 0, {}};
+    bs::game::setContainer(rec, c);
+    auto back = bs::game::containerOf(rec);
+    ctx.check(back[0] && back[0]->user.at("bs_attunement") == "abc", "shard slot keeps its user data");
+    ctx.check(back[2] && back[2]->count == 3, "modifier slot count");
+    ctx.check(!back[1], "untouched slot stays empty");
+});
+
+BS_REGISTER_SELFTEST("foundation.groups", [](Context& ctx) {
+    auto& p      = ctx.player();
+    auto  groups = bs::service::get<bs::service::IGroups>().groups(p);
+    ctx.check(groups.size() >= 7, "inbuilt groups present");
+    ctx.check(!groups.empty() && groups.front().id == bs::service::groups::kFavorites, "favorites sort first");
+    bs::core::WarpTarget t;
+    t.id     = "x";
+    t.kind   = "waystone";
+    t.global = true;
+    t.pos    = {1, 0, 0, 0};
+    auto of  = bs::service::get<bs::service::IGroups>().groupsOf(p, t);
+    auto has = [&](std::string const& id) { return std::find(of.begin(), of.end(), id) != of.end(); };
+    ctx.check(has(std::string(bs::service::groups::kGlobal)), "global waystones are in the global group");
+    ctx.check(has(bs::service::groups::dimension(1)), "dimension group");
+    ctx.check(!bs::service::openScreen(p, "no_such_screen"), "unknown screens do not open");
+});

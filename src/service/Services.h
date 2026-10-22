@@ -17,6 +17,7 @@
 // | ISelection      | U10        | SimpleForm list                                      |
 // | IEditScreen     | U13        | CustomForm with name + visibility                    |
 // | IArrival        | U13        | nothing (modifier effects on arriving entities)      |
+// | IGroups         | U12        | inbuilt groups + the player's user groups            |
 //
 // Extra list entries (Twinbound players, memorials, the return portal) are contributed with
 // `BS_REGISTER_TARGET_PROVIDER` (service/TargetProviders.h), not by replacing ITargets.
@@ -142,6 +143,29 @@ public:
     virtual void onArrived(Actor& entity, core::WaystoneRecord const& target) = 0;
 };
 
+// ---- groups -------------------------------------------------------------------------------------------
+
+/// Inbuilt group ids (docs/SPEC.md §4.4). Dimension groups are "waystones:dimension/<dim id>"
+/// (0 overworld, 1 nether, 2 end); user groups "waystones:user/<uuid>".
+namespace groups {
+inline constexpr std::string_view kFavorites = "waystones:favorites";
+inline constexpr std::string_view kPlayers   = "waystones:players";
+inline constexpr std::string_view kGlobal    = "waystones:global";
+inline constexpr std::string_view kTeams     = "waystones:teams";
+[[nodiscard]] inline std::string dimension(int dim) { return "waystones:dimension/" + std::to_string(dim); }
+} // namespace groups
+
+class IGroups {
+public:
+    virtual ~IGroups() = default;
+    /// Every group the player has (inbuilt + user), sorted by sortIndex then name; hidden included
+    /// (callers skip `hidden` ones where Waystones does).
+    [[nodiscard]] virtual std::vector<core::WaystoneGroup> groups(Player& player) = 0;
+    /// Group ids a list entry belongs to: the player's explicit assignment (favorites, user groups)
+    /// plus the implicit ones (global, players, teams, its dimension).
+    [[nodiscard]] virtual std::vector<std::string> groupsOf(Player& player, core::WarpTarget const& target) = 0;
+};
+
 // ---- access -----------------------------------------------------------------------------------------
 
 namespace detail {
@@ -190,6 +214,8 @@ template <>
 std::unique_ptr<IEditScreen> makeDefault<IEditScreen>();
 template <>
 std::unique_ptr<IArrival> makeDefault<IArrival>();
+template <>
+std::unique_ptr<IGroups> makeDefault<IGroups>();
 } // namespace detail
 
 } // namespace bs::service
