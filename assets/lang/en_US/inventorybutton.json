@@ -1,0 +1,12 @@
+{
+  "gui.waystones.inventory.return_to_waystone": "Return to Waystone",
+  "gui.waystones.inventory.return_to_nearest_waystone": "Return to Nearest Waystone",
+  "gui.waystones.inventory.no_waystones_activated": "You have not activated any waystones yet.",
+  "gui.waystones.inventory.confirm_return": "Do you really want to warp back to this waystone?",
+  "gui.waystones.inventory.confirm_return_bound_to": "Bound to: {}",
+  "bs.inventorybutton.cooldown": "Cooldown: {} seconds",
+  "bs.inventorybutton.xp_cost": "Experience: {} points",
+  "bs.inventorybutton.yes": "Yes",
+  "bs.inventorybutton.no": "No",
+  "bs.inventorybutton.disabled": "The inventory button is disabled on this server."
+}
