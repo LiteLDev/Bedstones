@@ -1,0 +1,21 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Bedstones RP",
+    "description": "Textures, models and names of Bedstones (Waystones for Bedrock)",
+    "uuid": "c33912cb-f105-4075-9d81-96fc83c33a4b",
+    "version": "${version}",
+    "min_engine_version": [
+      1,
+      21,
+      40
+    ]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "490d44cc-7d70-4390-841e-08073db99554",
+      "version": "${version}"
+    }
+  ]
+}
