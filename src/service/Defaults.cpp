@@ -22,6 +22,7 @@
 #include "mod/Log.h"
 #include "service/Services.h"
 #include "service/TargetProviders.h"
+#include "service/WarpEvents.h"
 
 namespace bs::service {
 
@@ -66,6 +67,7 @@ public:
             game::actionBar(player, "§4" + trFor(player, res.error, res.errorFallback));
             return res;
         }
+        if (auto taken = intercept(player, request)) return *taken;
         if (!request.skipRequirements) {
             auto& reqs = get<IRequirements>();
             core::WarpTarget target;
@@ -88,6 +90,7 @@ public:
             provider->onWarped(player, request.targetId);
         }
         if (auto* r = game::Waystones::get().find(dest->targetUid)) get<IArrival>().onArrived(player, *r);
+        notifyWarped(player, request, *dest);
         log().info("warp: {} -> {}", player.getRealName(), request.targetId);
         return WarpResult::success();
     }
