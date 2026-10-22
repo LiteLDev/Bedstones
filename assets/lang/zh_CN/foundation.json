@@ -1,0 +1,10 @@
+{
+  "bs.companion.cmd.yes": "companion: 是（客户端模组 {}）",
+  "bs.companion.cmd.no": "companion: 否（未安装客户端模组：使用表单界面）",
+  "bs.companion.cmd.count": "companion: {} 名玩家安装了客户端模组",
+  "bs.foundation.type.waystone": "传送石碑",
+  "bs.foundation.type.sharestone": "共享石碑",
+  "bs.foundation.type.warp_plate": "传送台",
+  "bs.foundation.name": "名称",
+  "bs.foundation.visibility": "可见性"
+}

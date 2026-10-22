@@ -1,0 +1,10 @@
+{
+  "bs.companion.cmd.yes": "companion: yes (client mod {})",
+  "bs.companion.cmd.no": "companion: no (no client mod: form screens)",
+  "bs.companion.cmd.count": "companion: {} player(s) with the client mod",
+  "bs.foundation.type.waystone": "Waystone",
+  "bs.foundation.type.sharestone": "Sharestone",
+  "bs.foundation.type.warp_plate": "Warp Plate",
+  "bs.foundation.name": "Name",
+  "bs.foundation.visibility": "Visibility"
+}

@@ -1,0 +1,21 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Bedstones BP",
+    "description": "Blocks, items and recipes of Bedstones (Waystones for Bedrock)",
+    "uuid": "aeaffadb-60f2-4a2e-8864-9647ae5371f7",
+    "version": "${version}",
+    "min_engine_version": [
+      1,
+      21,
+      40
+    ]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "c332024d-6827-43f1-af10-505211026da5",
+      "version": "${version}"
+    }
+  ]
+}
