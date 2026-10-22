@@ -1,0 +1,10 @@
+{
+  "bs.visuals.debug.placed": "Placed {0} ({1}) with uid {2}",
+  "bs.visuals.debug.stand_in": "stand-in",
+  "bs.visuals.debug.block": "block",
+  "bs.visuals.debug.cannot_place": "Cannot place it there (two free blocks are needed 3 blocks ahead).",
+  "bs.visuals.debug.unknown_kind": "Unknown kind {0}: use a waystone style or <color>_sharestone.",
+  "bs.visuals.debug.activated": "Activated {0} waystone(s).",
+  "bs.visuals.debug.forgot": "Forgot {0} waystone(s).",
+  "bs.visuals.debug.cleared": "Removed {0} debug stone(s)."
+}

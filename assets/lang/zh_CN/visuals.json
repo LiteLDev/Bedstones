@@ -1,0 +1,10 @@
+{
+  "bs.visuals.debug.placed": "已放置 {0}（{1}），uid {2}",
+  "bs.visuals.debug.stand_in": "替代方块",
+  "bs.visuals.debug.block": "方块",
+  "bs.visuals.debug.cannot_place": "无法放置（前方 3 格处需要两格空位）。",
+  "bs.visuals.debug.unknown_kind": "未知类型 {0}：请使用传送石样式或 <颜色>_sharestone。",
+  "bs.visuals.debug.activated": "已激活 {0} 个传送石。",
+  "bs.visuals.debug.forgot": "已遗忘 {0} 个传送石。",
+  "bs.visuals.debug.cleared": "已移除 {0} 个调试石。"
+}
