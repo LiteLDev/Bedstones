@@ -1,0 +1,32 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "bedstones:warp_portal",
+      "menu_category": { "category": "none", "is_hidden_in_commands": false },
+      "states": {
+        "bedstones:facing": [0, 1, 2, 3],
+        "bedstones:upper": [0, 1]
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.bedstones:warp_portal.name",
+      "minecraft:geometry": "geometry.bedstones.warp_portal",
+      "minecraft:material_instances": {
+        "*": { "texture": "bedstones_warp_portal", "render_method": "blend", "face_dimming": false, "ambient_occlusion": false }
+      },
+      "minecraft:collision_box": false,
+      "minecraft:selection_box": false,
+      "minecraft:destructible_by_mining": false,
+      "minecraft:destructible_by_explosion": false,
+      "minecraft:movable": { "movement_type": "immovable" },
+      "minecraft:light_emission": 10,
+      "minecraft:light_dampening": 0,
+      "minecraft:loot": "loot_tables/blocks/warp_portal.json",
+      "minecraft:map_color": "#8a3fd1"
+    },
+    "permutations": [
+      { "condition": "q.block_state('bedstones:facing') == 1 || q.block_state('bedstones:facing') == 3", "components": { "minecraft:transformation": { "rotation": [0, 90, 0] } } }
+    ]
+  }
+}

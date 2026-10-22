@@ -1,0 +1,15 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": { "identifier": "bedstones:epitaph" },
+    "tags": ["crafting_table"],
+    "pattern": ["GGG", "ADA", "GGG"],
+    "key": {
+      "G": { "item": "minecraft:gold_nugget" },
+      "A": { "item": "minecraft:amethyst_shard" },
+      "D": { "item": "minecraft:deepslate" }
+    },
+    "unlock": [{ "item": "minecraft:amethyst_shard" }],
+    "result": { "item": "bedstones:epitaph" }
+  }
+}

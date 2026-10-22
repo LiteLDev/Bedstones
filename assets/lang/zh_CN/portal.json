@@ -1,0 +1,6 @@
+{
+  "chat.waystones.warp_portal_no_space": "这里没有足够的空间开启跃迁传送门。",
+  "chat.waystones.warp_portal_attunement_lost": "此传送门已关闭，因为它的目标已被摧毁。",
+  "gui.waystones.waystone_selection.return_to_portal": "返回传送门",
+  "bs.portal.scroll_missing": "你需要手持传送门卷轴。"
+}

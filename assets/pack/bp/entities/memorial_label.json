@@ -1,0 +1,24 @@
+{
+  "format_version": "1.21.40",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "bedstones:memorial_label",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:type_family": { "family": ["bedstones_label", "inanimate"] },
+      "minecraft:collision_box": { "width": 0.01, "height": 0.01 },
+      "minecraft:physics": { "has_gravity": false, "has_collision": false },
+      "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
+      "minecraft:push_through": { "value": 1 },
+      "minecraft:damage_sensor": { "triggers": { "cause": "all", "deals_damage": "no" } },
+      "minecraft:fire_immune": {},
+      "minecraft:knockback_resistance": { "value": 1.0 },
+      "minecraft:health": { "value": 1, "max": 1 },
+      "minecraft:nameable": { "always_show": true, "allow_name_tag_renaming": false },
+      "minecraft:persistent": {}
+    }
+  }
+}

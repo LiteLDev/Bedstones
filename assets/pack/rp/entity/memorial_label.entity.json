@@ -1,0 +1,12 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "bedstones:memorial_label",
+      "materials": { "default": "entity_alphatest" },
+      "textures": {},
+      "geometry": {},
+      "render_controllers": []
+    }
+  }
+}
