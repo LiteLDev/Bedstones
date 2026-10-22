@@ -8,6 +8,7 @@
 
 #include "ll/api/event/EventBus.h"
 #include "ll/api/event/player/PlayerDisconnectEvent.h"
+#include "ll/api/event/server/ServerStoppingEvent.h"
 #include "ll/api/event/world/ServerLevelTickEvent.h"
 #include "ll/api/form/SimpleForm.h"
 #include "ll/api/service/Bedrock.h"
@@ -18,6 +19,7 @@
 #include "mc/world/actor/player/Player.h"
 #include "mc/world/effect/EffectDuration.h"
 #include "mc/world/effect/MobEffectInstance.h"
+#include "mc/deps/nbt/CompoundTag.h"
 #include "mc/world/item/ItemStack.h"
 #include "mc/world/level/Level.h"
 
@@ -61,10 +63,29 @@ int maxStackOf(std::string const& id) {
     return s.isNull() ? 64 : std::max<int>(1, s.getMaxStackSize());
 }
 
+/// The stack's whole user data (enchantments, name, damage, Bedstones keys) as SNBT.
+std::string nbtOf(ItemStack const& stack) {
+    if (stack.isNull() || !stack.mUserData || stack.mUserData->empty()) return {};
+    return stack.mUserData->toSnbt(SnbtFormat::Minimize, 0);
+}
+
+/// The game stack of a menu item, with its full user data when it has some.
+ItemStack makeStack(cm::Stack const& c) {
+    if (c.nbt.empty()) return game::toStack(toSlot(c));
+    auto stack = game::makeItem(c.id, c.count, c.aux);
+    if (auto tag = CompoundTag::fromSnbt(c.nbt); tag && !stack.isNull()) {
+        stack.setUserData(std::make_unique<CompoundTag>(std::move(*tag)));
+        return stack;
+    }
+    return game::toStack(toSlot(c));
+}
+
 cm::Slot fromStack(ItemStack const& stack) {
     auto s = game::toSlotItem(stack);
     if (!s) return std::nullopt;
-    return toCore(*s, std::max<int>(1, stack.getMaxStackSize()));
+    auto c = toCore(*s, std::max<int>(1, stack.getMaxStackSize()));
+    c.nbt  = nbtOf(stack);
+    return c;
 }
 
 nlohmann::json slotJson(cm::Slot const& s) {
@@ -92,6 +113,8 @@ std::string describe(cm::Slot const& s) { return s ? s->id + " x" + std::to_stri
 
 // ---- distance -----------------------------------------------------------------------------------------
 
+} // namespace
+
 bool withinReach(Player& player, core::WaystoneRecord const& r, double max) {
     if (static_cast<int>(player.getDimensionId()) != r.pos.dim) return false;
     auto   feet = player.getFeetPos();
@@ -100,6 +123,10 @@ bool withinReach(Player& player, core::WaystoneRecord const& r, double max) {
     double dz   = feet.z - (r.pos.z + 0.5);
     return dx * dx + dy * dy + dz * dz <= max * max;
 }
+
+bool hasContainer(core::WaystoneRecord const& r) { return r.isWaystone() || r.type == core::types::kWarpPlate; }
+
+namespace {
 
 // ---- the menu -------------------------------------------------------------------------------------------
 
@@ -142,7 +169,7 @@ void releaseCursor(Player& player) {
     auto after    = before;
     auto leftover = cm::returnCursor(after);
     storeInventory(player, before, after);
-    if (leftover) player.drop(game::toStack(toSlot(*leftover)), false);
+    if (leftover) player.drop(makeStack(*leftover), false);
     log().info("modifiers: cursor item returned to {}", player.getRealName());
 }
 
@@ -151,8 +178,12 @@ void releaseCursor(Player& player) {
 cm::Menu loadMenu(Player& player, core::WaystoneRecord const& r, std::uint32_t session) {
     cm::Menu m;
     auto     c = game::containerOf(r);
+    // The full item data rides along in the container JSON ("nbt", ignored by containerOf).
+    auto raw = r.extra.value("container", nlohmann::json{});
     for (std::size_t i = 0; i < c.size(); ++i) {
-        if (c[i]) m.container[i] = toCore(*c[i], maxStackOf(c[i]->id));
+        if (!c[i]) continue;
+        m.container[i] = toCore(*c[i], maxStackOf(c[i]->id));
+        if (raw.is_array() && i < raw.size() && raw[i].is_object()) m.container[i]->nbt = raw[i].value("nbt", std::string{});
     }
     loadInventory(player, m);
     m.cursor = heldCursor(player, session);
@@ -169,27 +200,11 @@ void loadInventory(Player& player, cm::Menu& m) {
 void storeInventory(Player& player, cm::Menu const& before, cm::Menu const& after) {
     auto& inv     = player.getInventory();
     bool  changed = false;
-    // Original stacks keep their full NBT when an equal item lands in another inventory slot.
-    std::vector<ItemStack> originals;
-    for (int i = 0; i < cm::kInventorySlots && i < inv.getContainerSize(); ++i) originals.push_back(inv.getItem(i));
-    for (std::size_t i = 0; i < after.inventory.size() && i < originals.size(); ++i) {
+    for (std::size_t i = 0; i < after.inventory.size() && static_cast<int>(i) < inv.getContainerSize(); ++i) {
         if (before.inventory[i] == after.inventory[i]) continue;
-        changed = true;
+        changed       = true;
         auto const& s = after.inventory[i];
-        if (!s) {
-            inv.setItem(static_cast<int>(i), ItemStack::EMPTY_ITEM());
-            continue;
-        }
-        std::optional<ItemStack> stack;
-        for (std::size_t j = 0; j < originals.size(); ++j) {
-            if (before.inventory[j] && before.inventory[j]->sameItem(*s)) {
-                stack = originals[j];
-                break;
-            }
-        }
-        if (!stack) stack = game::toStack(toSlot(*s));
-        stack->set(s->count);
-        inv.setItem(static_cast<int>(i), *stack);
+        inv.setItem(static_cast<int>(i), s ? makeStack(*s) : ItemStack::EMPTY_ITEM());
     }
     if (changed) player.sendInventory(false);
 }
@@ -202,6 +217,10 @@ void storeMenu(Player& player, core::WaystoneRecord& r, cm::Menu const& before, 
             if (after.container[i]) c[i] = toSlot(*after.container[i]);
         }
         game::setContainer(r, c);
+        auto& raw = r.extra["container"];
+        for (std::size_t i = 0; i < c.size() && i < raw.size(); ++i) {
+            if (after.container[i] && !after.container[i]->nbt.empty()) raw[i]["nbt"] = after.container[i]->nbt;
+        }
         game::Waystones::get().markDirty(r.uid);
     }
     storeInventory(player, before, after);
@@ -227,7 +246,7 @@ nlohmann::json buildModel(Player& player, core::WaystoneRecord const& r, std::ui
 
 core::WaystoneRecord* sessionRecord(Player& player, net::screens::ScreenSession& s) {
     auto* r = game::Waystones::get().find(s.context.value("uid", std::string{}));
-    if (!r || !withinReach(player, *r, kMaxMenuDistance)) return nullptr;
+    if (!r || !hasContainer(*r) || !withinReach(player, *r, kMaxMenuDistance)) return nullptr;
     return r;
 }
 
@@ -272,7 +291,7 @@ void handleAction(Player& player, net::screens::ScreenSession& s, std::string co
         return;
     }
     storeMenu(player, *r, before, after, s.session);
-    for (auto const& d : dropped) player.drop(game::toStack(toSlot(d)), false);
+    for (auto const& d : dropped) player.drop(makeStack(d), false);
     std::string contents;
     for (auto const& c : after.container) contents += (contents.empty() ? "" : ", ") + describe(c);
     log().info("modifiers: {} slot {} by {} on {} -> [{}]", action, slot, player.getRealName(), r->name, contents);
@@ -338,6 +357,17 @@ public:
     }
 };
 
+/// Returns every held cursor item (server stopping / mod disabled).
+void releaseAll() {
+    auto                      level = ll::service::getLevel();
+    std::vector<std::int64_t> ids;
+    for (auto const& [id, held] : gHeld) ids.push_back(id);
+    for (auto id : ids) {
+        if (auto* p = level ? level->getPlayer(ActorUniqueID{id}) : nullptr) releaseCursor(*p);
+    }
+    gHeld.clear();
+}
+
 class ModifiersModule {
 public:
     void install() {
@@ -361,12 +391,13 @@ public:
         mListeners.push_back(bus.emplaceListener<ll::event::PlayerDisconnectEvent>([](ll::event::PlayerDisconnectEvent& ev) {
             releaseCursor(ev.self());
         }));
+        mListeners.push_back(bus.emplaceListener<ll::event::ServerStoppingEvent>([](auto&) { releaseAll(); }));
     }
     void uninstall() {
         auto& bus = ll::event::EventBus::getInstance();
         for (auto& l : mListeners) bus.removeListener(l);
         mListeners.clear();
-        gHeld.clear();
+        releaseAll();
         service::reset<service::IArrival>();
     }
 
@@ -391,7 +422,7 @@ int activeModifierCount(core::WaystoneRecord const& record) { return cm::activeM
 
 bool openModifiers(Player& player, std::string const& uid) {
     auto* r = game::Waystones::get().find(uid);
-    if (!r) return false;
+    if (!r || !hasContainer(*r)) return false;
     if (!withinReach(player, *r, kMaxMenuDistance)) {
         log().info("modifiers: {} is too far away from {}", player.getRealName(), r->name);
         return false;

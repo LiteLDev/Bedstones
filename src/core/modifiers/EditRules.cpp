@@ -8,11 +8,15 @@ namespace bs::core::edit {
 std::string clipName(std::string_view name) {
     std::string out;
     std::size_t points = 0;
-    for (std::size_t i = 0; i < name.size();) {
+    for (std::size_t i = 0; i < name.size() && points < kMaxNameLength;) {
         auto        c   = static_cast<unsigned char>(name[i]);
-        std::size_t len = c < 0x80 ? 1 : (c >> 5) == 0x6 ? 2 : (c >> 4) == 0xE ? 3 : (c >> 3) == 0x1E ? 4 : 1;
-        if (i + len > name.size()) break;
-        if (points == kMaxNameLength) break;
+        std::size_t len = c < 0x80 ? 1 : (c >> 5) == 0x6 ? 2 : (c >> 4) == 0xE ? 3 : (c >> 3) == 0x1E ? 4 : 0;
+        bool        ok  = len > 0 && i + len <= name.size();
+        for (std::size_t k = 1; ok && k < len; ++k) ok = (static_cast<unsigned char>(name[i + k]) & 0xC0) == 0x80;
+        if (!ok) { // invalid UTF-8: drop the byte
+            ++i;
+            continue;
+        }
         if (!(len == 1 && (c < 0x20 || c == 0x7F))) {
             out.append(name.substr(i, len));
             ++points;

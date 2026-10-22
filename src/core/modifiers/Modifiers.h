@@ -23,9 +23,10 @@ struct Stack {
     int                                aux      = 0;
     std::map<std::string, std::string> user;
     int                                maxStack = 64;
+    std::string                        nbt; ///< the item's full user data (opaque, e.g. SNBT), "" = none
 
     /// Same item and data (stackable with each other).
-    [[nodiscard]] bool sameItem(Stack const& o) const { return id == o.id && aux == o.aux && user == o.user; }
+    [[nodiscard]] bool sameItem(Stack const& o) const { return id == o.id && aux == o.aux && user == o.user && nbt == o.nbt; }
     [[nodiscard]] bool operator==(Stack const&) const = default;
 };
 using Slot = std::optional<Stack>;

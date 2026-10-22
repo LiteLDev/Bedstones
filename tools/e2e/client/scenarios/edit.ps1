@@ -8,7 +8,7 @@ Wait-LogLine 'companion: server ready' 60 | Out-Null
 $r = Invoke-SelfTest 'edit.*'
 if ($r.Pass -lt 5) { throw "expected at least 5 edit selftests to pass, got $($r.Pass)" }
 $r = Invoke-SelfTest 'modifiers.*'
-if ($r.Pass -lt 4) { throw "expected at least 4 modifiers selftests to pass, got $($r.Pass)" }
+if ($r.Pass -lt 5) { throw "expected at least 5 modifiers selftests to pass, got $($r.Pass)" }
 
 # GUI layout logged by the screens: "gui=WxH left=L top=T".
 function Get-Layout([string]$line) {

@@ -170,6 +170,7 @@ TEST(EditRules, Names) {
     EXPECT_EQ(edit::finalName("NEAREST", "NEAREST", all), "NEAREST");
     EXPECT_EQ(edit::clipName(std::string(200, 'a')).size(), 128u);
     EXPECT_EQ(edit::clipName("a\nb"), "ab");
+    EXPECT_EQ(edit::clipName("a\x80" "b\xE4\xBD" "c"), "abc");
     EXPECT_EQ(edit::clipName("\xE4\xBD\xA0\xE5\xA5\xBD"), "\xE4\xBD\xA0\xE5\xA5\xBD");
 }
 

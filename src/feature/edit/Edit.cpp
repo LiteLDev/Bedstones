@@ -42,17 +42,8 @@ std::string kindOf(core::WaystoneRecord const& r) {
     return "waystone";
 }
 
-/// Waystones and warp plates have the 5-slot modifier container.
-bool hasContainer(core::WaystoneRecord const& r) { return r.isWaystone() || r.type == core::types::kWarpPlate; }
-
-bool withinReach(Player& player, core::WaystoneRecord const& r, double max) {
-    if (static_cast<int>(player.getDimensionId()) != r.pos.dim) return false;
-    auto   feet = player.getFeetPos();
-    double dx   = feet.x - (r.pos.x + 0.5);
-    double dy   = feet.y - (r.pos.y + 0.5);
-    double dz   = feet.z - (r.pos.z + 0.5);
-    return dx * dx + dy * dy + dz * dz <= max * max;
-}
+using modifiers::hasContainer;
+using modifiers::withinReach;
 
 /// The `inventoryButton` setting (U14's config section, read from its file when present).
 std::string inventoryButtonMode() {
@@ -117,16 +108,15 @@ void handleAction(Player& player, net::screens::ScreenSession& s, std::string co
         if (!r) return net::screens::close(player);
         if (!service::get<service::IPermissions>().canEdit(player, *r)) save(player, uid, name, visibility);
         auto session = s.session; // `s` is replaced when another screen opens
-        bool opened  = false;
         if (action == "modifiers") {
-            opened = modifiers::enabled() && service::openScreen(player, "modifiers", {{"uid", uid}});
+            if (modifiers::enabled() && hasContainer(*r)) service::openScreen(player, "modifiers", {{"uid", uid}});
         } else {
             auto source = s.context.value("source", nlohmann::json{});
             if (source.is_null()) source = defaultSource(uid);
-            opened = service::openScreen(player, "personal_settings", {{"uid", uid}, {"source", source}});
+            service::openScreen(player, "personal_settings", {{"uid", uid}, {"source", source}});
         }
-        // The other screen replaced this one; otherwise close.
-        if (!opened && net::screens::current(player, kScreen, session)) net::screens::close(player);
+        // The other screen replaced this one; when it refused to open, close.
+        if (net::screens::current(player, kScreen, session)) net::screens::close(player);
         return;
     }
 }

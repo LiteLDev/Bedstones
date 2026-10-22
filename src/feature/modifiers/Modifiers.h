@@ -29,6 +29,11 @@ struct ModifiersConfig {
 /// Opens the Warp Modifiers screen of `uid` (only checks the distance, like Waystones).
 bool openModifiers(Player& player, std::string const& uid);
 
+/// The player stands within `max` blocks (feet to block centre) of the record's block.
+[[nodiscard]] bool withinReach(Player& player, core::WaystoneRecord const& record, double max);
+/// Waystones and warp plates have the 5-slot modifier container.
+[[nodiscard]] bool hasContainer(core::WaystoneRecord const& record);
+
 /// Max distance (blocks) between the player and the block for the modifiers menu.
 inline constexpr double kMaxMenuDistance = 8.0;
 

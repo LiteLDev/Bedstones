@@ -126,7 +126,32 @@ BS_REGISTER_SELFTEST("modifiers.container_moves", [](Context& ctx) -> ll::coro::
     clearInventory(p);
 });
 
-BS_REGISTER_SELFTEST("modifiers.distance", [](Context& ctx) -> ll::coro::CoroTask<> {
+BS_REGISTER_SELFTEST("modifiers.keeps_item_data", [](Context& ctx) -> ll::coro::CoroTask<> {
+    auto& p   = ctx.player();
+    auto  pos = co_await placePlayer(ctx, 1390);
+    auto  uid = ctx.createWaystone(record(pos, "Named")).uid;
+    clearInventory(p);
+    auto named = bs::game::makeItem("minecraft:feather", 2);
+    bs::game::setDisplay(named, "Lucky Feather");
+    ctx.give(p, named, 3);
+    ctx.give(p, bs::game::makeItem("minecraft:feather", 1), 4);
+    CompanionScope scope(p);
+    ctx.require(bs::feature::modifiers::openModifiers(p, uid), "menu opens");
+    screens::simulateAction(p, "quick_move", {{"slot", cm::kInventoryBase + 3}});
+    screens::simulateAction(p, "quick_move", {{"slot", cm::kInventoryBase + 4}});
+    auto c = bs::game::containerOf(*bs::game::Waystones::get().find(uid));
+    ctx.check(c[1] && c[1]->count == 2 && c[2] && c[2]->count == 1, "named and plain feathers do not stack");
+    screens::simulateAction(p, "quick_move", {{"slot", 1}});
+    bool found = false;
+    auto& inv  = p.getInventory();
+    for (int i = 0; i < inv.getContainerSize(); ++i) {
+        if (inv.getItem(i).getCustomName() == "Lucky Feather") found = inv.getItem(i).mCount == 2;
+    }
+    ctx.check(found, "the custom name survives the container round trip");
+    clearInventory(p);
+});
+
+BS_REGISTER_SELFTEST("modifiers.distance",[](Context& ctx) -> ll::coro::CoroTask<> {
     auto& p   = ctx.player();
     auto  pos = co_await placePlayer(ctx, 1360);
     auto  far = pos;
