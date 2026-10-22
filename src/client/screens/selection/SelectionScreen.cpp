@@ -67,8 +67,8 @@ void levelMarks(Painter& p, float x, float y, int n, bool active) {
     float x0     = x + std::floor((16 - total) / 2);
     for (int i = 0; i < n; ++i) {
         float bx = x0 + static_cast<float>(i * 3);
-        p.fillRect({bx + 1, y + 6, 2, 6}, shadow);
-        p.fillRect({bx, y + 5, 2, 6}, mark);
+        p.fillRect({bx + 1, y + 6, 2, 6}, shadow, L::Foreground);
+        p.fillRect({bx, y + 5, 2, 6}, mark, L::Foreground);
     }
 }
 
@@ -176,6 +176,13 @@ public:
     }
 
     bool onMouseButton(MouseButton b, bool down, float x, float y) override {
+        // The same press can reach the screen twice in one frame (raw + posted input): one
+        // click must never cycle the sort twice or toggle a filter on and off again.
+        if (down) {
+            bool dup = b == mLastPress.button && mTime - mLastPress.time < 0.05 && std::abs(x - mLastPress.x) < 1 && std::abs(y - mLastPress.y) < 1;
+            mLastPress = {b, mTime, x, y};
+            if (dup) return true;
+        }
         if (mSearch.onMouseButton(b == MouseButton::Right, down, x, y)) return true;
         if (!down) return mList.click(b, down, x, y);
         if (mSort.click(b, x, y) || mManage.click(b, x, y)) return true;
@@ -468,6 +475,11 @@ private:
     float                                             mMouseX = -1, mMouseY = -1;
     double                                            mModelTime = -1, mTime = 0;
     bool                                              mLayoutLogged = false;
+    struct {
+        MouseButton button = MouseButton::Middle;
+        double      time   = -1;
+        float       x = -1, y = -1;
+    } mLastPress;
     std::map<std::string, std::unique_ptr<ItemStack>> mStacks;
     std::map<std::string, Tag>                        mTags;
 
