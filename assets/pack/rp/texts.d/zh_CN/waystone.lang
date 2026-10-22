@@ -1,0 +1,10 @@
+tile.bedstones:waystone.name=传送石碑
+tile.bedstones:mossy_waystone.name=苔石传送石碑
+tile.bedstones:sandy_waystone.name=砂岩传送石碑
+tile.bedstones:deepslate_waystone.name=深板岩传送石碑
+tile.bedstones:blackstone_waystone.name=黑色传送石碑
+tile.bedstones:end_stone_waystone.name=末影传送石碑
+tile.bedstones:red_nether_bricks_waystone.name=下界传送石碑
+tile.bedstones:purpur_waystone.name=紫珀传送石碑
+tile.bedstones:prismarine_waystone.name=海晶传送石碑
+tile.bedstones:mud_bricks_waystone.name=泥砖传送石碑

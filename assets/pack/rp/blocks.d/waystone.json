@@ -1,0 +1,32 @@
+{
+  "bedstones:waystone": {
+    "sound": "stone"
+  },
+  "bedstones:mossy_waystone": {
+    "sound": "stone"
+  },
+  "bedstones:sandy_waystone": {
+    "sound": "stone"
+  },
+  "bedstones:deepslate_waystone": {
+    "sound": "deepslate"
+  },
+  "bedstones:blackstone_waystone": {
+    "sound": "stone"
+  },
+  "bedstones:end_stone_waystone": {
+    "sound": "stone"
+  },
+  "bedstones:red_nether_bricks_waystone": {
+    "sound": "nether_brick"
+  },
+  "bedstones:purpur_waystone": {
+    "sound": "stone"
+  },
+  "bedstones:prismarine_waystone": {
+    "sound": "stone"
+  },
+  "bedstones:mud_bricks_waystone": {
+    "sound": "mud_bricks"
+  }
+}
