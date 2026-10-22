@@ -1,6 +1,8 @@
 // Selftests of the foundation: registry, player data, screens protocol and the default seams.
 
 #include <cmath>
+#include <memory>
+#include <utility>
 
 #include "mc/world/actor/player/Player.h"
 
@@ -23,6 +25,16 @@ bs::core::WaystoneRecord sampleRecord(Context& ctx, int dx, std::string name) {
     r.origin = bs::core::Origin::Player;
     return r;
 }
+
+/// The default_teleport / warp_events tests exercise the foundation's default ITeleport even when
+/// a unit (U7) replaced it: its stricter pipeline needs real blocks and held items.
+struct DefaultTeleportScope {
+    std::unique_ptr<bs::service::ITeleport> saved = std::exchange(
+        bs::service::detail::slot<bs::service::ITeleport>(),
+        bs::service::detail::makeDefault<bs::service::ITeleport>()
+    );
+    ~DefaultTeleportScope() { bs::service::detail::slot<bs::service::ITeleport>() = std::move(saved); }
+};
 
 } // namespace
 
@@ -115,6 +127,7 @@ BS_REGISTER_SELFTEST("foundation.default_targets", [](Context& ctx) {
 });
 
 BS_REGISTER_SELFTEST("foundation.default_teleport", [](Context& ctx) -> ll::coro::CoroTask<> {
+    DefaultTeleportScope useDefault;
     auto& p   = ctx.player();
     auto  rec = sampleRecord(ctx, 48, "Target");
     rec.facing = 2; // north: lands one block north
@@ -173,6 +186,7 @@ BS_REGISTER_WARP_LISTENER([](Player&, bs::service::WarpRequest const& r, bs::ser
 });
 
 BS_REGISTER_SELFTEST("foundation.warp_events", [](Context& ctx) {
+    DefaultTeleportScope useDefault;
     auto& p  = ctx.player();
     auto& r  = ctx.createWaystone(sampleRecord(ctx, 52, "Evented"));
     int before = gWarpedEvents;
