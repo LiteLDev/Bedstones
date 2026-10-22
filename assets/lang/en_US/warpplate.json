@@ -1,0 +1,7 @@
+{
+  "chat.waystones.warp_plate_has_no_target": "This warp plate is not bound to another warp plate yet.",
+  "chat.waystones.warp_plate_has_invalid_target": "The shard inside this warp plate has lost its attunement.",
+  "tooltip.waystones.attuned_shard.plug_into_warp_plate": "Insert this shard into a warp plate.",
+  "tooltip.waystones.attuned_shard.attunement_crumbling": "It will be consumed on next teleport.",
+  "tooltip.waystones.attuned_shard.attunement_lost": "This shard has lost its attunement."
+}

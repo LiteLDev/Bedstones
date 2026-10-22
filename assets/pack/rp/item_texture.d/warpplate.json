@@ -1,0 +1,17 @@
+{
+  "bedstones_warp_dust": {
+    "textures": "textures/items/warp_dust"
+  },
+  "bedstones_dormant_shard": {
+    "textures": "textures/items/dormant_shard"
+  },
+  "bedstones_attuned_shard": {
+    "textures": "textures/items/attuned_shard"
+  },
+  "bedstones_crumbling_attuned_shard": {
+    "textures": "textures/items/crumbling_attuned_shard"
+  },
+  "bedstones_deepslate_shard": {
+    "textures": "textures/items/deepslate_shard"
+  }
+}
