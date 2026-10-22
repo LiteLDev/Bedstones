@@ -28,7 +28,17 @@ jobs:
           restore-keys: |
             xmake-${{ matrix.target_type }}-
 
+      # The action's release lookup fails intermittently on the runners ("GitHub release for
+      # LLVM 22 was not found"); retry once before failing the job.
       - name: Setup LLVM
+        id: llvm
+        continue-on-error: true
+        uses: ZhongRuoyu/setup-llvm@v0
+        with:
+          llvm-version: 22
+
+      - name: Setup LLVM (retry)
+        if: steps.llvm.outcome == 'failure'
         uses: ZhongRuoyu/setup-llvm@v0
         with:
           llvm-version: 22
