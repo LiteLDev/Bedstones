@@ -10,6 +10,7 @@
 
 #include "client/Client.h"
 #include "client/screens/groups/GroupIcons.h"
+#include "client/screens/groups/PressFilter.h"
 #include "client/ui/screen/Screens.h"
 #include "client/ui/widgets/Style.h"
 #include "client/ui/widgets/TextBox.h"
@@ -84,6 +85,7 @@ public:
     }
 
     bool onMouseButton(MouseButton b, bool down, float x, float y) override {
+        if (!mPresses.accept(b, down)) return true;
         if (!down) return true;
         if (mName.onMouseButton(b == MouseButton::Right, true, x, y)) return true;
         if (!mIcon.click(b, x, y) && !mColor.click(b, x, y)) mSave.click(b, x, y);
@@ -124,6 +126,7 @@ private:
     Button      mIcon, mColor, mSave;
     std::string mIconId, mColorId;
     bool        mInit = false, mLogged = false;
+    PressFilter mPresses;
 };
 
 } // namespace

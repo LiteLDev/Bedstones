@@ -16,6 +16,7 @@
 #include "client/Client.h"
 #include "client/input/InputRouter.h"
 #include "client/screens/groups/GroupIcons.h"
+#include "client/screens/groups/PressFilter.h"
 #include "client/ui/screen/Screens.h"
 #include "client/ui/widgets/Style.h"
 #include "client/ui/widgets/TextBox.h"
@@ -132,6 +133,7 @@ public:
     }
 
     bool onMouseButton(MouseButton b, bool down, float x, float y) override {
+        if (!mPresses.accept(b, down)) return true;
         if (!down) {
             if (!mDragId.empty()) drop();
             mList.click(b, false, x, y);
@@ -182,8 +184,14 @@ private:
     }
 
     void layout(Rect const& screen) {
-        float needed = kHeader + kRowHeight * static_cast<float>(std::max<std::size_t>(mAll.size(), 1)) + 4;
-        float height = std::min(std::max(200.f, needed), std::max(120.f, screen.h - 40));
+        // Like Java's init(): the height is computed when the screen opens (or the window is
+        // resized), so the frame does not jump when groups are added or removed.
+        if (mHeight <= 0 || screen.w != mSizedFor.w || screen.h != mSizedFor.h) {
+            float needed = kHeader + kRowHeight * static_cast<float>(std::max<std::size_t>(mAll.size(), 1)) + 4;
+            mHeight      = std::min(std::max(200.f, needed), std::max(120.f, screen.h - 40));
+            mSizedFor    = screen;
+        }
+        float height = mHeight;
         mLeft        = std::floor((screen.w - kWidth) / 2);
         mTop         = std::floor((screen.h - height) / 2);
         float listX  = mLeft + (kWidth - kRowWidth) / 2;
@@ -324,6 +332,9 @@ private:
     std::string           mDragId, mLastHandleId;
     int                   mDragStart = -1;
     std::optional<nlohmann::json> mPendingModel;
+    PressFilter           mPresses;
+    float                 mHeight = 0;
+    Rect                  mSizedFor;
     double                mLastHandleAt = -1, mTime = 0;
     float                 mLeft = 0, mTop = 0, mMouseX = -1, mMouseY = -1;
     bool                  mShiftKey = false, mLoggedLayout = false;
