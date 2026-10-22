@@ -162,3 +162,24 @@ BS_REGISTER_SELFTEST("foundation.groups", [](Context& ctx) {
     ctx.check(has(bs::service::groups::dimension(1)), "dimension group");
     ctx.check(!bs::service::openScreen(p, "no_such_screen"), "unknown screens do not open");
 });
+
+#include "service/WarpEvents.h"
+
+namespace {
+int gWarpedEvents = 0;
+}
+BS_REGISTER_WARP_LISTENER([](Player&, bs::service::WarpRequest const& r, bs::service::Destination const&) {
+    if (r.source.itemId == "bedstones:foundation_probe") ++gWarpedEvents;
+});
+
+BS_REGISTER_SELFTEST("foundation.warp_events", [](Context& ctx) {
+    auto& p  = ctx.player();
+    auto& r  = ctx.createWaystone(sampleRecord(ctx, 52, "Evented"));
+    int before = gWarpedEvents;
+    bs::service::WarpRequest req;
+    req.source.kind   = bs::core::WarpSourceKind::WarpScroll;
+    req.source.itemId = "bedstones:foundation_probe";
+    req.targetId      = r.uid;
+    ctx.check(bs::service::get<bs::service::ITeleport>().warp(p, req).ok, "warp ok");
+    ctx.check(gWarpedEvents == before + 1, "warp listeners run after a successful warp");
+});

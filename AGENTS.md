@@ -67,6 +67,7 @@ reference it with `tr(key, "English fallback")` without defining it.
 | `BS_REGISTER_CLIENT_MESSAGE("channel", fn)` / `BS_REGISTER_SERVER_MESSAGE("channel", fn)` | `net/Messages.h` / `client/net/ClientNet.h` | Named JSON channels client -> server / server -> client. |
 | `BS_REGISTER_TARGET_PROVIDER(TargetProvider{...})` | `service/TargetProviders.h` | Extra selection-list entries (feather partners, memorials, return portal). |
 | `BS_REGISTER_UI_LAYER(instance)` | `client/ui/UiRoot.h` | A layer drawn over vanilla screens / HUD (e.g. the inventory button). |
+| `BS_REGISTER_WARP_INTERCEPTOR(fn)` / `BS_REGISTER_WARP_LISTENER(fn)` | `service/WarpEvents.h` | Take a warp over (Portal Scroll spawns a portal) / react to a successful warp (consume the scroll, damage the warp stone). Every ITeleport calls them. |
 | `BS_REGISTER_SCREEN_OPENER("name", fn)` | `service/ScreenOpeners.h` | Opens a screen this unit owns when another unit asks `service::openScreen(player, "name", args)` (table of names + args in the header). |
 
 Registrations live in .cpp files linked directly into the DLL, so they are never stripped.
@@ -102,6 +103,14 @@ Registrations live in .cpp files linked directly into the DLL, so they are never
 - **Groups** (`service::get<IGroups>()`, ids in `service::groups`): `groups(player)` and
   `groupsOf(player, target)`; favorites are the explicit group `waystones:favorites` in
   `playerData.groups[uid]`.
+- **Warp items**: the unit owning an item consumes / damages it in a `BS_REGISTER_WARP_LISTENER`
+  when `request.source.itemId` is its item (scrolls -1 unless creative, warp stone -1 durability),
+  so it works with any teleport implementation.
+- **Config sections** (one file each, owned by one unit): `general` (U9: restrictedWaystones,
+  defaultVisibility, allowEveryoneToManageGlobalWaystones, name generation), `teleports` (U7: pets,
+  leashed, deny list), `requirements` (U8: enableCosts, enableCooldowns, warpRequirements), `items`
+  (U4: warpStoneUseTime, scrollUseTime, enableDurability), `warpPlate` (U3: use/cooldown time),
+  `modifiers` (U13: enableModifiers), `inventoryButton` (U14), `worldGen` (U15), `client` (U17).
 - **Shared player-data keys** (`PlayerWaystoneData`): `cooldowns` = cooldown id ("waystones:inventory_button")
   -> expiry epoch ms (U8 writes); `extra["returnPortal"]` = uid of the player's last Warp Portal
   record (U5 writes, U4's Return Scroll reads); `extra["feather"]` (U6); `sortMode` /

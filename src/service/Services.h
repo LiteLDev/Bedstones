@@ -66,7 +66,9 @@ class ITeleport {
 public:
     virtual ~ITeleport() = default;
     /// Validates, pays requirements and teleports `player` (plus whatever the implementation
-    /// takes along). Shows errors to the player itself; also returns them.
+    /// takes along). Shows errors to the player itself; also returns them. Implementations must
+    /// honour service/WarpEvents.h: `intercept()` before paying, `notifyWarped()` after success,
+    /// plus the target provider's `onWarped` and `IArrival::onArrived`.
     virtual WarpResult warp(Player& player, WarpRequest const& request) = 0;
     /// Resolves a target id to a landing spot (nullopt: gone / invalid).
     [[nodiscard]] virtual std::optional<Destination> resolve(Player& player, std::string const& targetId) = 0;
