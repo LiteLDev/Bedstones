@@ -33,7 +33,7 @@
   "bs.commands.place.missing_block": "方块 {} 未注册：仅创建了传送石记录",
   "bs.commands.twinbound.missing_item": "物品 {} 未注册",
   "bs.commands.cooldown.negative": "整数不能小于 0，实际为 {}",
-  "bs.commands.no_permission": "你没有使用此命令的权限",
+  "bs.commands.no_permission": "你需要管理员权限。",
   "bs.commands.player_required": "此处需要由玩家执行此命令",
   "bs.commands.no_world": "没有加载世界",
   "bs.commands.no_player": "未找到玩家",

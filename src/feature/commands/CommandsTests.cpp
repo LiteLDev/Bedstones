@@ -27,6 +27,18 @@ bs::core::WaystoneRecord record(Context& ctx, int dx, std::string name, std::str
     return r;
 }
 
+/// Test players may keep data from earlier runs (same name -> same uuid): start clean.
+void fresh(Player& p) {
+    auto& ws = bs::game::Waystones::get();
+    auto  key = bs::game::Waystones::playerKey(p);
+    auto& d   = ws.playerData(p);
+    d.activated.clear();
+    d.sortingIndex.clear();
+    d.cooldowns.clear();
+    d.aliases.clear();
+    ws.markPlayerDirty(key);
+}
+
 void expectText(Context& ctx, cmd::Reply const& r, std::string const& expected, std::string const& what) {
     ctx.check(r.text() == expected, what + ": expected '" + expected + "', got '" + r.text() + "'");
 }
@@ -36,6 +48,7 @@ void expectText(Context& ctx, cmd::Reply const& r, std::string const& expected, 
 BS_REGISTER_SELFTEST("commands.activate_forget", [](Context& ctx) {
     auto& ws   = bs::game::Waystones::get();
     auto& p    = ctx.player();
+    fresh(p);
     auto  name = p.getRealName();
     auto& rec  = ctx.createWaystone(record(ctx, 1600, "Cmd Alpha"));
     auto  uid  = rec.uid;
@@ -68,6 +81,8 @@ BS_REGISTER_SELFTEST("commands.multiple_players", [](Context& ctx) {
     auto& ws  = bs::game::Waystones::get();
     auto& p   = ctx.player();
     Player& q = ctx.spawnPlayer("BsCmdSecond");
+    fresh(p);
+    fresh(q);
     auto& rec = ctx.createWaystone(record(ctx, 1606, "Cmd Gamma"));
     auto  uid = rec.uid;
     std::vector<Player*> targets{&p, &q};
@@ -140,6 +155,7 @@ BS_REGISTER_SELFTEST("commands.place", [](Context& ctx) {
 BS_REGISTER_SELFTEST("commands.count_list", [](Context& ctx) {
     auto& ws   = bs::game::Waystones::get();
     auto& p    = ctx.player();
+    fresh(p);
     auto  key  = bs::game::Waystones::playerKey(p);
     auto  name = p.getRealName();
     auto& a    = ctx.createWaystone(record(ctx, 1620, "Owned Near", key));
@@ -187,9 +203,9 @@ BS_REGISTER_SELFTEST("commands.cooldown", [](Context& ctx) {
     auto& ws   = bs::game::Waystones::get();
     auto& p    = ctx.player();
     auto  name = p.getRealName();
+    fresh(p);
     std::vector<Player*> t{&p};
     auto& cd = ws.playerData(p).cooldowns;
-    cd.clear();
 
     auto before = cmd::nowMs();
     auto r      = cmd::cooldownSet(nullptr, t, "inventory_button", 60);
@@ -263,6 +279,14 @@ BS_REGISTER_SELFTEST("commands.twinbound", [](Context& ctx) {
     ctx.check(r.ok, "re-link with another player");
     auto pl2 = bs::game::findItem(p, isFeather);
     ctx.check(pl2 && bs::game::userString(bs::game::itemAt(p, *pl2), bs::ids::kNbtFeather) == pid, "existing feather id kept");
+
+    // A stack of feathers is never linked as a whole: a single new feather is handed out.
+    Player& stacked = ctx.spawnPlayer("BsCmdStack");
+    ctx.give(stacked, bs::game::makeItem("minecraft:feather", 2), 0);
+    r = cmd::twinbound(nullptr, q, stacked);
+    ctx.check(r.ok, "link with a player holding a feather stack");
+    auto const& stack = bs::game::itemAt(stacked, {bs::game::ItemLocation::Kind::Inventory, 0});
+    ctx.check(stack.mCount == 2 && !bs::game::userString(stack, bs::ids::kNbtFeather), "the stack stays untouched");
 });
 
 BS_REGISTER_SELFTEST("commands.gui", [](Context& ctx) {

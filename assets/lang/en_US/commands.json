@@ -33,7 +33,7 @@
   "bs.commands.place.missing_block": "Block {} is not registered: created the waystone record only",
   "bs.commands.twinbound.missing_item": "Item {} is not registered",
   "bs.commands.cooldown.negative": "Integer must not be less than 0, found {}",
-  "bs.commands.no_permission": "You do not have permission to use this command",
+  "bs.commands.no_permission": "You need operator permission.",
   "bs.commands.player_required": "A player is required to run this command here",
   "bs.commands.no_world": "No world is loaded",
   "bs.commands.no_player": "No player was found",

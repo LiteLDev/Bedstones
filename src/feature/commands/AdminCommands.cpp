@@ -118,8 +118,6 @@ Reply perTargets(Player* viewer, std::vector<Player*> const& targets, std::strin
     return ok(say(viewer, base + ".success.multiple", multipleFallback, args..., targets.size()));
 }
 
-std::string waystoneName(WaystoneRecord const& r) { return r.name; }
-
 } // namespace
 
 std::string Reply::text() const {
@@ -151,21 +149,23 @@ WaystoneRecord* waystoneAt(GlobalPos const& pos) {
 Reply activate(Player* viewer, std::vector<Player*> const& targets, GlobalPos const& pos) {
     auto* r = waystoneAt(pos);
     if (!r) return notFound(viewer);
-    auto& ws  = game::Waystones::get();
-    auto  uid = r->uid;
+    auto& ws   = game::Waystones::get();
+    auto  uid  = r->uid;
+    auto  name = r->name; // listeners may touch the registry: don't keep `r`
     for (auto* p : targets) ws.activate(*p, uid);
-    log().info("commands: activated waystone {} for {} players", r->name, targets.size());
-    return perTargets(viewer, targets, "commands.waystones.activate", "Activated waystone {} for {}", "Activated waystone {} for {} players", waystoneName(*r));
+    log().info("commands: activated waystone {} for {} players", name, targets.size());
+    return perTargets(viewer, targets, "commands.waystones.activate", "Activated waystone {} for {}", "Activated waystone {} for {} players", name);
 }
 
 Reply forget(Player* viewer, std::vector<Player*> const& targets, GlobalPos const& pos) {
     auto* r = waystoneAt(pos);
     if (!r) return notFound(viewer);
-    auto& ws  = game::Waystones::get();
-    auto  uid = r->uid;
+    auto& ws   = game::Waystones::get();
+    auto  uid  = r->uid;
+    auto  name = r->name;
     for (auto* p : targets) ws.forget(*p, uid);
-    log().info("commands: deactivated waystone {} for {} players", r->name, targets.size());
-    return perTargets(viewer, targets, "commands.waystones.forget", "Deactivated waystone {} for {}", "Deactivated waystone {} for {} players", waystoneName(*r));
+    log().info("commands: deactivated waystone {} for {} players", name, targets.size());
+    return perTargets(viewer, targets, "commands.waystones.forget", "Deactivated waystone {} for {}", "Deactivated waystone {} for {} players", name);
 }
 
 Reply forgetAll(Player* viewer, std::vector<Player*> const& targets) {
@@ -196,14 +196,33 @@ Reply place(Player* viewer, GlobalPos const& pos, std::string const& style, std:
     int  facing  = 2; // Java's default state faces north
     bool hasBlock = game::blockWith(blockId) != nullptr;
     bool placed   = false;
+    auto bp       = game::blockPos(pos);
+    BlockPos up{bp.x, bp.y + 1, bp.z};
     if (hasBlock) {
-        auto bp = game::blockPos(pos);
+        // Validate before touching anything: both cells in the build range and loaded.
+        if (bp.y < region->getMinHeight() || up.y >= region->getMaxHeight() || !region->hasChunksAt(bp, 0, false)
+            || !region->hasChunksAt(up, 0, false)) {
+            return fail(say(viewer, "bs.commands.place.failed", "Could not place {} here", blockId));
+        }
+        // Waystones overlapping the two cells are replaced (records and their remaining halves):
+        // the one standing at pos, one whose upper half is at pos, one whose lower half is at pos+1.
+        auto removeAt = [&](BlockPos const& lower, std::initializer_list<BlockPos> leftovers) {
+            if (auto* old = ws.findAt(game::globalPos(pos.dim, lower))) ws.remove(std::string(old->uid));
+            for (auto const& b : leftovers) game::clearBlock(*region, b);
+        };
+        if (game::lowerHalf(*region, bp) != bp) removeAt({bp.x, bp.y - 1, bp.z}, {{bp.x, bp.y - 1, bp.z}});
+        BlockPos above{bp.x, bp.y + 2, bp.z};
+        if (game::intState(region->getBlock(above), ids::kStateUpper).value_or(0) == 1) {
+            removeAt(up, {above});
+        } else {
+            removeAt(up, {});
+        }
         // The command replaces whatever is there, like Java's setBlock.
         game::clearBlock(*region, bp);
-        game::clearBlock(*region, BlockPos{bp.x, bp.y + 1, bp.z});
+        game::clearBlock(*region, up);
         placed = game::placeTwoTall(*region, bp, blockId, facing);
+        if (!placed) return fail(say(viewer, "bs.commands.place.failed", "Could not place {} here", blockId));
     }
-    if (hasBlock && !placed) return fail(say(viewer, "bs.commands.place.failed", "Could not place {} here", blockId));
 
     // A block placed over an old record replaces it.
     if (auto* old = ws.findAt(pos)) ws.remove(std::string(old->uid));
@@ -332,9 +351,11 @@ int freeSlot(Player& p) {
     }
     return -1;
 }
+/// The first single feather the player carries (inventory, then offhand). Stacked feathers are
+/// skipped: linking a stack would clone one link onto every item of it.
 std::optional<game::ItemLocation> carriedFeather(Player& p) {
     auto id = featherItem();
-    return game::findItem(p, [&id](ItemStack const& s) { return game::idOf(s) == id; });
+    return game::findItem(p, [&id](ItemStack const& s) { return s.mCount == 1 && game::idOf(s) == id; });
 }
 } // namespace
 
@@ -445,7 +466,7 @@ void print(CommandOutput& out, Reply const& r) {
 bool gate(CommandOrigin const& origin, CommandOutput& out) {
     if (bs::commands::isAdmin(origin)) return true;
     Player* p = bs::commands::playerOf(origin);
-    out.error(say(p, "bs.commands.no_permission", "You do not have permission to use this command"));
+    out.error(say(p, "bs.commands.no_permission", "You need operator permission."));
     return false;
 }
 
