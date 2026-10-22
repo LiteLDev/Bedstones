@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "client/Client.h"
+#include "client/screens/edit/ClickFilter.h"
 #include "client/screens/edit/Icons.h"
 #include "client/ui/screen/Screens.h"
 #include "client/ui/widgets/Style.h"
@@ -152,6 +153,7 @@ public:
     }
 
     bool onMouseButton(MouseButton b, bool down, float x, float y) override {
+        if (!mClicks.accept(b, down, x, y)) return true;
         if (mCanEdit && b != MouseButton::Middle && mName.onMouseButton(b == MouseButton::Right, down, x, y)) return true;
         if (!down) return true;
         for (auto* btn : {&mPersonalBtn, &mVisBtn, &mModsBtn, &mSaveBtn}) {
@@ -215,6 +217,7 @@ private:
     TextBox                  mName;
     Button                   mPersonalBtn, mVisBtn, mModsBtn, mSaveBtn;
     HoverTooltip             mTip;
+    ClickFilter              mClicks;
     std::string              mKind, mColor, mError;
     std::vector<std::string> mOptions;
     std::size_t              mVisIndex    = 0;

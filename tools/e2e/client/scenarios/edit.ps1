@@ -20,6 +20,9 @@ function Click-Gui($layout, [double]$x, [double]$y, [switch]$Right) {
     Click (($layout.L + $x) / $layout.W) (($layout.T + $y) / $layout.H) -Relative -Right:$Right
 }
 
+# Creative players may manage global waystones: the visibility button cycles Activation <-> Global
+# (with the default permissions; more options when the permissions unit is present).
+Invoke-Chat '/gamemode creative'
 Invoke-Chat '/clear @s'
 Invoke-Chat '/give @s diamond 3'
 
@@ -35,12 +38,15 @@ Save-Screenshot 'edit_open' | Out-Null
 Click-Gui $edit 75 79                 # the name field
 Type-Text 'Bedstones Test'
 Click-Gui $edit 10 105                # visibility icon button: next option
-Wait-LogLine 'edit screen: visibility -> ' 10 -Since $mark | Out-Null
+Wait-LogLine 'edit screen: visibility -> global' 10 -Since $mark | Out-Null
+Start-Sleep -Milliseconds 500
+$cycles = @(Get-LeviLog -Since $mark | Select-String 'edit screen: visibility -> ').Count
+if ($cycles -ne 1) { throw "one click must cycle the visibility once (saw $cycles)" }
 Move-Mouse (($edit.L + 120) / $edit.W) (($edit.T + 30) / $edit.H) -Relative
 Start-Sleep -Milliseconds 400
 Save-Screenshot 'edit_typed' | Out-Null
 Click-Gui $edit 88 160                # Save
-Wait-LogLine 'edit: waystone saved Bedstones Test \(\w+\) by ' 15 -Since $mark | Out-Null
+Wait-LogLine 'edit: waystone saved Bedstones Test \(global\) by' 15 -Since $mark | Out-Null
 Start-Sleep -Milliseconds 800
 
 # ---- modifiers screen -------------------------------------------------------------------------------

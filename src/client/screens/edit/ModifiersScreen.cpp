@@ -16,6 +16,7 @@
 #include "mc/world/item/ItemStack.h"
 
 #include "client/Client.h"
+#include "client/screens/edit/ClickFilter.h"
 #include "client/screens/edit/Icons.h"
 #include "client/ui/screen/Screens.h"
 #include "client/ui/widgets/Style.h"
@@ -185,6 +186,7 @@ public:
     }
 
     bool onMouseButton(MouseButton b, bool down, float x, float y) override {
+        if (!mClicks.accept(b, down, x, y)) return true;
         if (!down || b == MouseButton::Middle) return true;
         int  button = b == MouseButton::Right ? 1 : 0;
         int  slot   = slotAt(x, y);
@@ -246,6 +248,7 @@ private:
     std::array<std::optional<ShownItem>, cm::kContainerSlots> mContainer{};
     std::array<std::optional<ShownItem>, cm::kInventorySlots> mInventory{};
     std::optional<ShownItem>                                  mCursor;
+    ClickFilter                                               mClicks;
     std::string                                               mGalactic;
     std::uint32_t                                             mGalacticColor = style::kWhite;
     float                                                     mLeft = 0, mTop = 0;
