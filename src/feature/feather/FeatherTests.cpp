@@ -149,6 +149,7 @@ BS_REGISTER_SELFTEST("feather.targets", [](Context& ctx) {
 });
 
 BS_REGISTER_SELFTEST("feather.warp", [](Context& ctx) -> ll::coro::CoroTask<> {
+    ctx.freeWarps();
     auto& a = ctx.player();
     auto& b = ctx.spawnPlayer();
     ctx.give(a, feather(), 0);

@@ -12,6 +12,7 @@
 #include "mc/world/actor/player/Player.h"
 
 #include "feature/manage/Manage.h"
+#include "game/Blocks.h"
 #include "game/Waystones.h"
 #include "mod/Commands.h"
 #include "mod/Log.h"
@@ -47,6 +48,7 @@ void seed(Player& player) {
             rec.pos = {static_cast<int>(player.getDimensionId()), static_cast<int>(feet.x) + (i == 0 ? 2 : 10 + 3 * static_cast<int>(i)),
                        static_cast<int>(feet.y), static_cast<int>(feet.z)};
             r = ws.create(rec);
+            if (r) game::placeRecordBlock(*r);
         }
         if (!r) return;
         uids.push_back(r->uid);

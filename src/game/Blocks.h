@@ -52,6 +52,15 @@ bool placeTwoTall(BlockSource& region, BlockPos const& pos, std::string_view id,
 /// Unit offset (dx, dz) of a Java 2D facing.
 [[nodiscard]] std::pair<int, int> facingOffset(int facing);
 
+/// The block id a record stands for: its style, else "warp_plate" / "<color>_sharestone" /
+/// "waystone" by type ("bedstones:" id). Empty for types without a placeable block.
+[[nodiscard]] std::string recordBlockId(core::WaystoneRecord const& record);
+/// Places the block of `record` at its position (two-tall for waystones / sharestones, facing from
+/// the record; one block for warp plates), replacing what is there. The chunk must be loaded.
+/// Returns false when the block id is not registered or the dimension isn't available. Debug
+/// commands and selftests use it so teleports find a real target block.
+bool placeRecordBlock(core::WaystoneRecord const& record);
+
 [[nodiscard]] core::GlobalPos globalPos(BlockSource const& region, BlockPos const& pos);
 [[nodiscard]] core::GlobalPos globalPos(int dim, BlockPos const& pos);
 [[nodiscard]] BlockPos        blockPos(core::GlobalPos const& pos);

@@ -217,3 +217,24 @@ BS_REGISTER_SELFTEST("foundation.screen_close", [](Context& ctx) {
     bs::net::setTestSink(nullptr);
     bs::net::setCompanion(p, std::nullopt);
 });
+
+#include "game/Items.h"
+#include "mc/world/item/ItemStack.h"
+
+BS_REGISTER_SELFTEST("foundation.container_item_data", [](Context& ctx) {
+    auto stack = bs::game::makeItem("minecraft:diamond_sword", 1);
+    ctx.require(!stack.isNull(), "sword item");
+    bs::game::setDisplay(stack, "Excalibur");
+    bs::game::setUserString(stack, "bs_attunement", "abc");
+    auto slot = bs::game::toSlotItem(stack);
+    ctx.require(slot.has_value() && !slot->nbt.empty(), "the whole user data is captured");
+    auto& rec = ctx.createWaystone(sampleRecord(ctx, 54, "Data"));
+    bs::game::Container c{};
+    c[1] = *slot;
+    bs::game::setContainer(rec, c);
+    auto back = bs::game::containerOf(rec);
+    ctx.require(back[1].has_value(), "slot stored");
+    auto restored = bs::game::toStack(*back[1]);
+    ctx.check(restored.getCustomName() == "Excalibur", "custom name survives the container");
+    ctx.check(bs::game::userString(restored, "bs_attunement") == std::optional<std::string>{"abc"}, "user strings survive");
+});

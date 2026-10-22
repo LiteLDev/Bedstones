@@ -253,7 +253,7 @@ BS_REGISTER_SELFTEST("requirements.xp_deduction", [](Context& ctx) {
     core::WaystoneRecord rec;
     rec.name     = "Far";
     rec.pos      = ctx.testPos(899);
-    auto& target = ctx.createWaystone(rec);
+    auto& target = ctx.createWaystone(rec, true);
     setTotalXp(p, 50);
     core::WarpTarget t;
     t.id      = target.uid;

@@ -5,6 +5,7 @@
 #include "mc/world/actor/player/Player.h"
 #include "mc/world/item/ItemStack.h"
 
+#include "feature/feather/Feather.h"
 #include "feature/commands/AdminCommands.h"
 #include "game/Blocks.h"
 #include "game/Ids.h"
@@ -97,13 +98,14 @@ BS_REGISTER_SELFTEST("commands.multiple_players", [](Context& ctx) {
     expectText(ctx, r, "Reset all cooldowns for 2 players", "multiple cooldown message");
 });
 
-BS_REGISTER_SELFTEST("commands.upper_half", [](Context& ctx) {
+BS_REGISTER_SELFTEST("commands.upper_half", [](Context& ctx) -> ll::coro::CoroTask<> {
     // With the waystone block registered (U1), the upper half resolves to the record below.
     auto  id = bs::ids::id("waystone");
     if (!bs::game::blockWith(id)) {
         ctx.info("bedstones:waystone not registered: upper-half lookup skipped");
-        return;
+        co_return;
     }
+    ctx.require(co_await ctx.ensureLoaded(ctx.testPos(1608)), "test area loaded");
     auto& rec = ctx.createWaystone(record(ctx, 1608, "Cmd Upper"));
     auto  pos = rec.pos;
     auto  up  = pos;
@@ -113,9 +115,10 @@ BS_REGISTER_SELFTEST("commands.upper_half", [](Context& ctx) {
     ctx.check(cmd::waystoneAt(up) == bs::game::Waystones::get().findAt(pos), "upper half -> lower record");
 });
 
-BS_REGISTER_SELFTEST("commands.place", [](Context& ctx) {
+BS_REGISTER_SELFTEST("commands.place", [](Context& ctx) -> ll::coro::CoroTask<> {
     auto& ws  = bs::game::Waystones::get();
     auto  pos = ctx.testPos(1610);
+    ctx.require(co_await ctx.ensureLoaded(pos), "test area loaded");
     auto  up  = pos;
     up.y += 1;
     ctx.cleanupBlock(pos);
@@ -240,28 +243,10 @@ BS_REGISTER_SELFTEST("commands.twinbound", [](Context& ctx) {
     auto  r   = cmd::twinbound(nullptr, p, p);
     expectText(ctx, r, "Choose two different players", "same player");
 
-    if (bs::game::makeItem(bs::ids::id(bs::ids::kTwinboundFeather)).isNull()) {
-        r = cmd::twinbound(nullptr, p, q);
-        ctx.check(!r.ok && r.text().find("not registered") != std::string::npos, "missing feather item reported");
-    }
-    // The linking logic, with a vanilla stand-in for the feather item.
-    bs::feature::commands::detail::setFeatherItemForTest("minecraft:feather");
-    struct Restore {
-        ~Restore() { bs::feature::commands::detail::setFeatherItemForTest({}); }
-    } restore;
-
     r = cmd::twinbound(nullptr, p, q);
     expectText(ctx, r, "Linked Twinbound Feathers for " + p.getRealName() + " and " + q.getRealName(), "success");
-    auto isFeather = [](ItemStack const& s) { return bs::game::idOf(s) == "minecraft:feather"; };
-    auto pl = bs::game::findItem(p, isFeather);
-    auto ql = bs::game::findItem(q, isFeather);
-    ctx.require(pl && ql, "both players got a feather");
-    auto pid   = bs::game::userString(bs::game::itemAt(p, *pl), bs::ids::kNbtFeather);
-    auto plink = bs::game::userString(bs::game::itemAt(p, *pl), bs::ids::kNbtFeatherLink);
-    auto qid   = bs::game::userString(bs::game::itemAt(q, *ql), bs::ids::kNbtFeather);
-    auto qlink = bs::game::userString(bs::game::itemAt(q, *ql), bs::ids::kNbtFeatherLink);
-    ctx.check(pid && qid && *pid != *qid, "feathers have distinct ids");
-    ctx.check(plink == qid && qlink == pid, "feathers link to each other");
+    ctx.check(bs::feature::feather::arePartners(p, q), "the feathers are linked in the feather unit's format");
+    ctx.check(!bs::feature::feather::carriedFeathers(p).empty() && !bs::feature::feather::carriedFeathers(q).empty(), "both players got a feather");
 
     r = cmd::twinbound(nullptr, p, q);
     ctx.check(!r.ok, "second link reports already linked");
@@ -273,20 +258,12 @@ BS_REGISTER_SELFTEST("commands.twinbound", [](Context& ctx) {
     for (int i = 0; i < size; ++i) ctx.give(full, bs::game::makeItem("minecraft:stone", 1), i);
     r = cmd::twinbound(nullptr, p, full);
     expectText(ctx, r, full.getRealName() + " needs a free inventory slot for a Twinbound Feather", "no space");
-    // Re-linking p with another player keeps p's feather id and points it at the new partner.
+
+    // Linking p with a third player keeps the first link (feathers hold a set of links).
     Player& third = ctx.spawnPlayer("BsCmdThird");
     r = cmd::twinbound(nullptr, p, third);
-    ctx.check(r.ok, "re-link with another player");
-    auto pl2 = bs::game::findItem(p, isFeather);
-    ctx.check(pl2 && bs::game::userString(bs::game::itemAt(p, *pl2), bs::ids::kNbtFeather) == pid, "existing feather id kept");
-
-    // A stack of feathers is never linked as a whole: a single new feather is handed out.
-    Player& stacked = ctx.spawnPlayer("BsCmdStack");
-    ctx.give(stacked, bs::game::makeItem("minecraft:feather", 2), 0);
-    r = cmd::twinbound(nullptr, q, stacked);
-    ctx.check(r.ok, "link with a player holding a feather stack");
-    auto const& stack = bs::game::itemAt(stacked, {bs::game::ItemLocation::Kind::Inventory, 0});
-    ctx.check(stack.mCount == 2 && !bs::game::userString(stack, bs::ids::kNbtFeather), "the stack stays untouched");
+    ctx.check(r.ok, "link with another player");
+    ctx.check(bs::feature::feather::arePartners(p, third) && bs::feature::feather::arePartners(p, q), "both links hold");
 });
 
 BS_REGISTER_SELFTEST("commands.gui", [](Context& ctx) {

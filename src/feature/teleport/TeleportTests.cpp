@@ -211,6 +211,7 @@ BS_REGISTER_SELFTEST("teleport.landing_fallback", [](Context& ctx) -> CoroTask<>
 // ---- dimensions and chunk loading ---------------------------------------------------------------------
 
 BS_REGISTER_SELFTEST("teleport.cross_dimension", [](Context& ctx) -> CoroTask<> {
+    ctx.freeWarps();
     auto& p   = ctx.player();
     auto  ow  = co_await surface(ctx, 720);
     co_await goTo(ctx, ow);
@@ -252,6 +253,7 @@ BS_REGISTER_SELFTEST("teleport.cross_dimension", [](Context& ctx) -> CoroTask<> 
 });
 
 BS_REGISTER_SELFTEST("teleport.async_load", [](Context& ctx) -> CoroTask<> {
+    ctx.freeWarps();
     auto& p = ctx.player();
     auto base = co_await surface(ctx, 730);
     co_await goTo(ctx, base);

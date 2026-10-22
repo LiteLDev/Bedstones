@@ -1,6 +1,6 @@
 // `/waystones debug scrolls`: sets up two activated test waystones (records) next to the player
-// for the scrolls e2e scenario, with a lodestone standing in for waystone A so a blank scroll can
-// be used on it. Admin only.
+// for the scrolls e2e scenario, with real waystone blocks (a blank scroll can be used on A, and
+// teleports find their target block). Admin only.
 
 #include <cmath>
 
@@ -61,8 +61,8 @@ BS_REGISTER_SUBCOMMAND([](ll::command::CommandHandle& cmd) {
         auto            bUid = ensureRecord(*p, "Scroll Test B", b);
         if (aUid.empty() || bUid.empty()) return output.error("no world");
         bool placed = false;
-        if (auto const* lodestone = game::blockWith("minecraft:lodestone")) {
-            placed = game::setBlock(p->getDimensionBlockSource(), game::blockPos(a), *lodestone);
+        for (auto const& uid : {aUid, bUid}) {
+            if (auto* r = game::Waystones::get().find(uid)) placed = game::placeRecordBlock(*r) || placed;
         }
         log().info("scrolls debug: A={} at {} {} {}, B={} at {} {} {} (block placed: {})", aUid, a.x, a.y, a.z, bUid, b.x, b.y, b.z, placed);
         output.success("Scroll test waystones ready: A (" + std::to_string(a.x) + " " + std::to_string(a.y) + " " + std::to_string(a.z) + "), B");

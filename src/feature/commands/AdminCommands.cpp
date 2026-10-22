@@ -1,5 +1,6 @@
 // Waystones' admin commands (docs/SPEC.md §6). See AdminCommands.h.
 
+#include "feature/feather/Feather.h"
 #include "feature/commands/AdminCommands.h"
 
 #include <chrono>
@@ -87,9 +88,7 @@ struct CooldownSecondsParams {
 
 namespace {
 
-std::string gFeatherItem; // "" = bedstones:twinbound_feather
 
-std::string featherItem() { return gFeatherItem.empty() ? ids::id(ids::kTwinboundFeather) : gFeatherItem; }
 
 template <class... Args>
 std::string say(Player* viewer, std::string_view key, std::string_view fallback, Args const&... args) {
@@ -343,60 +342,31 @@ Reply gui(Player& viewer, Player& target) {
 
 // ---- twinbound ----------------------------------------------------------------------------------------------
 
-namespace {
-int freeSlot(Player& p) {
-    int size = p.getInventory().getContainerSize();
-    for (int i = 0; i < size; ++i) {
-        if (game::itemAt(p, {game::ItemLocation::Kind::Inventory, i}).isNull()) return i;
-    }
-    return -1;
-}
-/// The first single feather the player carries (inventory, then offhand). Stacked feathers are
-/// skipped: linking a stack would clone one link onto every item of it.
-std::optional<game::ItemLocation> carriedFeather(Player& p) {
-    auto id = featherItem();
-    return game::findItem(p, [&id](ItemStack const& s) { return s.mCount == 1 && game::idOf(s) == id; });
-}
-} // namespace
-
+// Linking is the Twinbound Feather unit's: `feather::link` gives missing feathers and links them in
+// its own format (feather id + set of links), the same one the in-game ritual writes.
 Reply twinbound(Player* viewer, Player& first, Player& second) {
+    using feather::LinkResult;
     if (&first == &second || game::Waystones::playerKey(first) == game::Waystones::playerKey(second)) {
         return fail(say(viewer, "commands.waystones.twinbound.same_player", "Choose two different players"));
     }
-    auto firstLoc  = carriedFeather(first);
-    auto secondLoc = carriedFeather(second);
-    for (auto [p, loc] : {std::pair{&first, &firstLoc}, std::pair{&second, &secondLoc}}) {
-        if (!*loc && freeSlot(*p) < 0) {
-            return fail(say(viewer, "commands.waystones.twinbound.no_space", "{} needs a free inventory slot for a Twinbound Feather", p->getRealName()));
-        }
+    if (game::makeItem(ids::id(ids::kTwinboundFeather)).isNull()) {
+        return fail(say(viewer, "bs.commands.twinbound.missing_item", "Item {} is not registered", ids::id(ids::kTwinboundFeather)));
     }
-    if ((!firstLoc || !secondLoc) && game::makeItem(featherItem()).isNull()) {
-        return fail(say(viewer, "bs.commands.twinbound.missing_item", "Item {} is not registered", featherItem()));
-    }
-    // Give the missing feathers.
-    for (auto [p, loc] : {std::pair{&first, &firstLoc}, std::pair{&second, &secondLoc}}) {
-        if (*loc) continue;
-        int slot = freeSlot(*p);
-        game::setItemAt(*p, {game::ItemLocation::Kind::Inventory, slot}, game::makeItem(featherItem()));
-        *loc = game::ItemLocation{game::ItemLocation::Kind::Inventory, slot};
-    }
-    ItemStack a = game::itemAt(first, *firstLoc);
-    ItemStack b = game::itemAt(second, *secondLoc);
-    auto aId = game::userString(a, ids::kNbtFeather), bId = game::userString(b, ids::kNbtFeather);
-    if (core::commands::feathersLinked(aId, game::userString(a, ids::kNbtFeatherLink), bId, game::userString(b, ids::kNbtFeatherLink))) {
+    auto outcome = feather::link(first, second, true);
+    switch (outcome.result) {
+    case LinkResult::Success:
+        log().info("commands: twinbound linked {} and {}", first.getRealName(), second.getRealName());
+        return ok(say(viewer, "commands.waystones.twinbound.success", "Linked Twinbound Feathers for {} and {}", first.getRealName(), second.getRealName()));
+    case LinkResult::AlreadyLinked:
         log().info("commands: twinbound {} and {} already linked", first.getRealName(), second.getRealName());
         return fail(say(viewer, "commands.waystones.twinbound.already_linked", "{} and {} already have linked Twinbound Feathers", first.getRealName(), second.getRealName()));
+    case LinkResult::SamePlayer:
+        return fail(say(viewer, "commands.waystones.twinbound.same_player", "Choose two different players"));
+    case LinkResult::NoSpace:
+    case LinkResult::NoFeather:
+        break;
     }
-    if (!aId) aId = core::randomUuid();
-    if (!bId) bId = core::randomUuid();
-    game::setUserString(a, ids::kNbtFeather, *aId);
-    game::setUserString(a, ids::kNbtFeatherLink, *bId);
-    game::setUserString(b, ids::kNbtFeather, *bId);
-    game::setUserString(b, ids::kNbtFeatherLink, *aId);
-    game::setItemAt(first, *firstLoc, a);
-    game::setItemAt(second, *secondLoc, b);
-    log().info("commands: twinbound linked {} and {}", first.getRealName(), second.getRealName());
-    return ok(say(viewer, "commands.waystones.twinbound.success", "Linked Twinbound Feathers for {} and {}", first.getRealName(), second.getRealName()));
+    return fail(say(viewer, "commands.waystones.twinbound.no_space", "{} needs a free inventory slot for a Twinbound Feather", outcome.player));
 }
 
 // ---- cooldown -----------------------------------------------------------------------------------------------
@@ -446,7 +416,6 @@ Reply cooldownSet(Player* viewer, std::vector<Player*> const& targets, std::stri
 }
 
 namespace detail {
-void setFeatherItemForTest(std::string id) { gFeatherItem = std::move(id); }
 } // namespace detail
 
 // ---- command registration -----------------------------------------------------------------------------------

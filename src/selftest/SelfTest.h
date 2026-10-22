@@ -48,10 +48,19 @@ public:
     /// A free test area: a position `dx` blocks east of the world spawn at the surface (y of the
     /// spawn). Distinct tests use distinct `dx` to avoid overlaps.
     [[nodiscard]] core::GlobalPos testPos(int dx, int dz = 0) const;
-    /// Creates a waystone record (removed after the test). Missing uid -> random.
-    core::WaystoneRecord& createWaystone(core::WaystoneRecord record);
+    /// Creates a waystone record (removed after the test). Missing uid -> random. With `withBlock`
+    /// the record's block is placed too (style / type id; removed after the test): teleports check
+    /// that the target block exists once the block is registered.
+    core::WaystoneRecord& createWaystone(core::WaystoneRecord record, bool withBlock = false);
+    /// Places the block of a record (overworld only). False when its block id is not registered.
+    bool placeRecordBlock(core::WaystoneRecord const& record);
+    /// Warps cost nothing for the rest of this test (swaps IRequirements for a free one).
+    void freeWarps();
     /// Sets a block by id with integer states (restored to air after the test).
     bool setBlock(core::GlobalPos const& pos, std::string const& id, std::vector<std::pair<std::string, int>> const& states = {});
+    /// Brings the test player next to `pos` and waits (up to 5 s) until its chunks are loaded:
+    /// `ctx.require(co_await ctx.ensureLoaded(pos), "test area loaded")`.
+    [[nodiscard]] ll::coro::CoroTask<bool> ensureLoaded(core::GlobalPos pos);
     /// Remembers a position to clear (set to air) after the test.
     void cleanupBlock(core::GlobalPos const& pos);
     /// Removes the record with this uid after the test (records created by the code under test).
@@ -83,6 +92,7 @@ private:
     std::vector<SimulatedPlayer*> mPlayers;
     std::vector<std::string>     mWaystones;
     std::vector<core::GlobalPos> mBlocks;
+    std::shared_ptr<void>        mRestoreRequirements;
 };
 
 using SyncTest  = std::function<void(Context&)>;

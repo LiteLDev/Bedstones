@@ -15,7 +15,14 @@
 #include "mc/server/commands/CommandOutput.h"
 #include "mc/world/actor/player/Player.h"
 
+#include "ll/api/service/Bedrock.h"
+
+#include "mc/world/level/BlockPos.h"
+#include "mc/world/level/Level.h"
+
 #include "feature/requirements/Requirements.h"
+#include "feature/teleport/Teleport.h"
+#include "game/Blocks.h"
 #include "game/Waystones.h"
 #include "mod/Commands.h"
 #include "mod/Log.h"
@@ -57,25 +64,41 @@ void debugWarp(CommandOrigin const& origin, CommandOutput& output, int distance,
     target.kind = created->type;
     target.pos  = created->pos;
     auto cost   = service::get<service::IRequirements>().resolve(*player, src, target);
-    auto before = totalXp(*player);
-    auto res    = service::get<service::ITeleport>().warp(*player, {src, uid});
-    log().info(
-        "requirements debug warp: {} distance {} source {} cost {} xp -> {} (xp {} -> {})",
-        player->getRealName(),
-        distance,
-        core::toString(*kind),
-        cost.xpPoints,
-        res.ok ? "ok" : "failed: " + res.errorFallback,
-        before,
-        totalXp(*player)
-    );
-    // Keep the temporary target until an asynchronous teleport is surely done.
-    ll::coro::keepThis([uid]() -> ll::coro::CoroTask<> {
+    // The target is far away: load its chunks and put a real waystone block there first (the
+    // teleport checks that the target block exists), then warp.
+    auto playerId = player->getOrCreateUniqueID();
+    auto pos      = created->pos;
+    ll::coro::keepThis([uid, src, cost, distance, playerId, pos, kind = *kind]() -> ll::coro::CoroTask<> {
+        bool loaded = co_await feature::teleport::preloadDestination(pos);
+        auto level  = ll::service::getLevel();
+        auto* p     = level ? level->getPlayer(playerId) : nullptr;
+        auto* rec   = game::Waystones::get().find(uid);
+        if (!p || !rec) co_return;
+        if (loaded) game::placeRecordBlock(*rec);
+        auto before = totalXp(*p);
+        auto res    = service::get<service::ITeleport>().warp(*p, {src, uid});
+        log().info(
+            "requirements debug warp: {} distance {} source {} cost {} xp -> {} (xp {} -> {})",
+            p->getRealName(),
+            distance,
+            core::toString(kind),
+            cost.xpPoints,
+            res.ok ? "ok" : "failed: " + res.errorFallback,
+            before,
+            totalXp(*p)
+        );
+        // Keep the temporary target until the teleport is surely done.
         co_await ll::chrono::ticks(200);
-        game::Waystones::get().remove(uid);
+        if (auto* r = game::Waystones::get().find(uid)) {
+            auto at = r->pos;
+            game::Waystones::get().remove(uid);
+            if (auto* region = feature::teleport::regionOf(at.dim)) {
+                game::clearBlock(*region, BlockPos{at.x, at.y + 1, at.z});
+                game::clearBlock(*region, game::blockPos(at));
+            }
+        }
     }).launch(ll::thread::ServerThreadExecutor::getDefault());
-    if (res.ok) output.success("warped (cost " + std::to_string(cost.xpPoints) + " xp points)");
-    else output.error("warp failed: " + res.errorFallback);
+    output.success("warping (cost " + std::to_string(cost.xpPoints) + " xp points)");
 }
 
 } // namespace

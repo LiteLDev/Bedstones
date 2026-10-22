@@ -156,16 +156,17 @@ function Draw-Style([string]$name, $s) {
             for ($x = $cx + 4; $x -le $cx + 11; $x++) { if ($g[$y][$x] -eq 'd') { $g[$y][$x] = 'a' } }
         }
     }
-    # Runes in the rune colour ('r') with an engraved shadow ('s'); the lower side rune is engraved only.
+    # Runes are only engraved ('s') into the stone: the coloured, glowing runes are drawn by the client
+    # mod's visuals for the players who activated the waystone (as Waystones' runes renderer does).
     Stamp $g $bigRune 22 11 's'
-    Stamp $g $bigRune 21 10 'r'
-    Stamp $g $smallRune 6 9 'r'
+    Stamp $g $bigRune 21 10 's'
+    Stamp $g $smallRune 6 9 's'
     Stamp $g $smallRune 6 16 's'
     # Top: a carved ring; bottom: plain darker stone.
     for ($y = 0; $y -lt 16; $y++) {
         for ($x = 32; $x -lt 48; $x++) {
             $dx = $x - 39.5; $dy = $y - 7.5; $d = [Math]::Sqrt($dx * $dx + $dy * $dy)
-            if ($d -gt 2.5 -and $d -lt 3.6) { $g[$y][$x] = 's' } elseif ($d -le 1.2) { $g[$y][$x] = 'r' }
+            if ($d -gt 2.5 -and $d -lt 3.6) { $g[$y][$x] = 's' } elseif ($d -le 1.2) { $g[$y][$x] = 's' }
         }
         for ($x = 48; $x -lt 64; $x++) { if ($g[$y][$x] -eq 'b') { $g[$y][$x] = 'c' } }
     }

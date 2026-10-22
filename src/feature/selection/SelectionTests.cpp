@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "mc/world/level/dimension/DimensionType.h"
 #include "mc/deps/core/math/Vec3.h"
 #include "mc/server/SimulatedPlayer.h"
 #include "mc/world/actor/player/Player.h"
@@ -61,7 +62,7 @@ core::WaystoneRecord& make(Context& ctx, int dx, std::string name, std::string t
     r.style      = r.type;
     r.origin     = core::Origin::Player;
     r.visibility = core::types::isSharestone(r.type) ? core::Visibility::Sharestone : vis;
-    return ctx.createWaystone(std::move(r));
+    return ctx.createWaystone(std::move(r), true);
 }
 
 WarpSource sourceAt(WarpSourceKind kind, core::WaystoneRecord const* from = nullptr) {
@@ -265,6 +266,7 @@ BS_REGISTER_SELFTEST("selection.sort", [](Context& ctx) {
 });
 
 BS_REGISTER_SELFTEST("selection.select_validation", [](Context& ctx) -> ll::coro::CoroTask<> {
+    ctx.freeWarps();
     auto& ws  = game::Waystones::get();
     auto& p   = ctx.player();
     auto& src = make(ctx, 1050, "Here");
@@ -275,6 +277,9 @@ BS_REGISTER_SELFTEST("selection.select_validation", [](Context& ctx) -> ll::coro
     ws.activate(p, dst.uid);
     auto dstUid = dst.uid, srcUid = src.uid, noUid = no.uid;
     auto dstPos = dst.pos;
+    // Stand next to the source waystone (the teleport checks the source is in reach).
+    p.teleport(Vec3{static_cast<float>(src.pos.x) + 1.5f, static_cast<float>(src.pos.y), static_cast<float>(src.pos.z) + 0.5f}, DimensionType(0));
+    co_await ctx.ticks(2);
     Sink sink(p);
     openSelection(p, sourceAt(WarpSourceKind::Waystone, &src));
     ctx.require(net::screens::current(p, kScreen) != nullptr, "selection open");

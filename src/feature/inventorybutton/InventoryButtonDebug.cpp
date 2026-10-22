@@ -14,6 +14,7 @@
 #include "mc/world/level/BlockPos.h"
 
 #include "feature/inventorybutton/CooldownRequirements.h"
+#include "game/Blocks.h"
 #include "game/Waystones.h"
 #include "game/WorldDb.h"
 #include "mod/Commands.h"
@@ -62,6 +63,7 @@ BS_REGISTER_SUBCOMMAND([](ll::command::CommandHandle& cmd) {
             auto& ws  = game::Waystones::get();
             auto* rec = ws.create(r);
             if (!rec) return output.error("No world.");
+            game::placeRecordBlock(*rec); // the teleport needs the real target block
             ws.activate(*player, rec->uid);
             log().info(
                 "inventory button debug: waystone {} at {} {} {} activated for {}",

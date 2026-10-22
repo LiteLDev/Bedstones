@@ -15,6 +15,7 @@
 #include "mc/world/actor/player/Player.h"
 
 #include "feature/selection/Selection.h"
+#include "game/Blocks.h"
 #include "game/Waystones.h"
 #include "mod/Commands.h"
 #include "mod/Log.h"
@@ -118,6 +119,7 @@ std::string setupDebugWaystones(Player& player) {
         if (s.preview) r.extra[kPreviewKey] = nlohmann::json::parse(s.preview);
         auto* created = ws.create(std::move(r));
         if (!created) continue;
+        game::placeRecordBlock(*created);
         if (s.activate) ws.activate(player, created->uid);
         if (s.favorite) data.groups[created->uid] = {std::string(service::groups::kFavorites)};
         if (home.empty()) home = created->uid;

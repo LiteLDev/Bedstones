@@ -80,10 +80,11 @@ bool near(Player& p, core::GlobalPos const& pos, float range = 2.5f) {
 } // namespace
 
 BS_REGISTER_SELFTEST("inventorybutton.state_modes", [](Context& ctx) {
+    ctx.freeWarps();
     ConfigGuard cfg;
     auto&       ws  = game::Waystones::get();
     auto&       p   = ctx.player();
-    auto&       rec = ctx.createWaystone(record(ctx, 1400, "IB Home"));
+    auto&       rec = ctx.createWaystone(record(ctx, 1400, "IB Home"), true);
     auto        uid = rec.uid;
 
     ConfigGuard::mode("");
@@ -136,8 +137,8 @@ BS_REGISTER_SELFTEST("inventorybutton.nearest", [](Context& ctx) -> ll::coro::Co
     auto&           p  = ctx.player();
     PlayerDataGuard pd{p};
     ConfigGuard::mode("NEAREST");
-    auto a = ctx.createWaystone(record(ctx, 1410, "IB A")).uid;
-    auto b = ctx.createWaystone(record(ctx, 1440, "IB B")).uid;
+    auto a = ctx.createWaystone(record(ctx, 1410, "IB A"), true).uid;
+    auto b = ctx.createWaystone(record(ctx, 1440, "IB B"), true).uid;
     auto c = ctx.createWaystone(record(ctx, 1400, "IB Nether", 1)).uid; // same x/z, other dimension
     auto d = ctx.createWaystone(record(ctx, 1404, "IB Unknown")).uid;   // nearest, but not activated
     for (auto const& uid : {a, b, c}) ws.activate(p, uid);
@@ -170,6 +171,7 @@ BS_REGISTER_SELFTEST("inventorybutton.nearest", [](Context& ctx) -> ll::coro::Co
 });
 
 BS_REGISTER_SELFTEST("inventorybutton.warp_message", [](Context& ctx) -> ll::coro::CoroTask<> {
+    ctx.freeWarps();
     ConfigGuard cfg;
     auto&       ws            = game::Waystones::get();
     auto&       p             = ctx.player();
@@ -179,7 +181,7 @@ BS_REGISTER_SELFTEST("inventorybutton.warp_message", [](Context& ctx) -> ll::cor
     });
     net::setCompanion(p, net::CompanionInfo{"test", {"native_screen"}});
 
-    auto rec = ctx.createWaystone(record(ctx, 1470, "IB Target"));
+    auto rec = ctx.createWaystone(record(ctx, 1470, "IB Target"), true);
     ws.activate(p, rec.uid);
 
     // Disabled: the message is ignored.
@@ -259,7 +261,7 @@ BS_REGISTER_SELFTEST("inventorybutton.cooldown", [](Context& ctx) -> ll::coro::C
     p.setPlayerGameType(GameType::Survival);
     ConfigGuard::mode("NEAREST");
 
-    auto rec = ctx.createWaystone(record(ctx, 1490, "IB Cooldown"));
+    auto rec = ctx.createWaystone(record(ctx, 1490, "IB Cooldown"), true);
     ws.activate(p, rec.uid);
     ws.playerData(p).cooldowns.erase(kCooldownId);
 

@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "ll/api/service/Bedrock.h"
+
 #include "mc/deps/core/string/HashedString.h"
 #include "mc/world/actor/Actor.h"
 #include "mc/world/level/BlockPos.h"
@@ -9,6 +11,8 @@
 #include "mc/world/level/block/Block.h"
 #include "mc/world/level/block/BlockChangeContext.h"
 #include "mc/world/level/block/BlockType.h"
+#include "mc/world/level/Level.h"
+#include "mc/world/level/dimension/Dimension.h"
 
 #include "game/Ids.h"
 
@@ -98,6 +102,36 @@ std::pair<int, int> facingOffset(int facing) {
     default:
         return {1, 0}; // east
     }
+}
+
+std::string recordBlockId(core::WaystoneRecord const& r) {
+    if (!r.style.empty()) return ids::id(r.style);
+    if (r.type == core::types::kWarpPlate) return ids::id(ids::kWarpPlate);
+    if (r.isSharestone()) return ids::id(r.type);
+    if (r.isWaystone()) return ids::id("waystone");
+    return {};
+}
+
+bool placeRecordBlock(core::WaystoneRecord const& r) {
+    auto id = recordBlockId(r);
+    if (id.empty() || !blockWith(id)) return false;
+    auto level = ll::service::getLevel();
+    if (!level) return false;
+    auto dim = level->getDimension(r.pos.dim).lock();
+    if (!dim) return false;
+    auto& region = dim->getBlockSourceFromMainChunkSource();
+    auto  pos    = blockPos(r.pos);
+    if (!region.hasChunksAt(pos, 0, false)) return false;
+    // Already there: replacing it would make the block's unit drop the record.
+    if (region.getBlock(pos).getTypeName() == id) return true;
+    if (r.type == core::types::kWarpPlate) {
+        auto const* b = blockWith(id, {{ids::kStateFacing, r.facing & 3}});
+        return b && setBlock(region, pos, *b);
+    }
+    BlockPos up{pos.x, pos.y + 1, pos.z};
+    clearBlock(region, up);
+    clearBlock(region, pos);
+    return placeTwoTall(region, pos, id, r.facing);
 }
 
 core::GlobalPos globalPos(BlockSource const& region, BlockPos const& pos) {

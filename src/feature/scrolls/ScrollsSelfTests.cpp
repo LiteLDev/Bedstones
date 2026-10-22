@@ -103,8 +103,7 @@ struct ConfigGuard {
 
 BS_REGISTER_SELFTEST("scrolls.bind_blank", [](Context& ctx) {
     auto& p   = survivalPlayer(ctx);
-    auto& rec = ctx.createWaystone(record(ctx, 400, "Bind Target"));
-    ctx.setBlock(rec.pos, "minecraft:lodestone");
+    auto& rec = ctx.createWaystone(record(ctx, 400, "Bind Target"), true);
     ctx.check(recordAtBlock(p, rec.pos) == &rec, "the record block is found");
     ctx.check(recordAtBlock(p, ctx.testPos(402)) == nullptr, "a plain position has no record");
     giveHand(ctx, p, item(ids::kBlankScroll, 2));
@@ -122,7 +121,7 @@ BS_REGISTER_SELFTEST("scrolls.bind_blank", [](Context& ctx) {
 
 BS_REGISTER_SELFTEST("scrolls.bound_warp", [](Context& ctx) -> ll::coro::CoroTask<> {
     auto& p   = survivalPlayer(ctx);
-    auto& rec = ctx.createWaystone(record(ctx, 410, "Bound Target"));
+    auto& rec = ctx.createWaystone(record(ctx, 410, "Bound Target"), true);
     auto  s   = item(ids::kBoundScroll, 2);
     game::setUserString(s, ids::kNbtBoundUid, rec.uid);
     giveHand(ctx, p, s);
@@ -140,8 +139,8 @@ BS_REGISTER_SELFTEST("scrolls.bound_warp", [](Context& ctx) -> ll::coro::CoroTas
 BS_REGISTER_SELFTEST("scrolls.return_scroll", [](Context& ctx) -> ll::coro::CoroTask<> {
     auto& p    = survivalPlayer(ctx);
     auto& ws   = game::Waystones::get();
-    auto& a    = ctx.createWaystone(record(ctx, 420, "Near"));
-    auto& b    = ctx.createWaystone(record(ctx, 440, "Far"));
+    auto& a    = ctx.createWaystone(record(ctx, 420, "Near"), true);
+    auto& b    = ctx.createWaystone(record(ctx, 440, "Far"), true);
     auto  aUid = a.uid, bUid = b.uid;
     ws.activate(p, bUid);
     ws.activate(p, aUid);
@@ -166,7 +165,7 @@ BS_REGISTER_SELFTEST("scrolls.return_scroll", [](Context& ctx) -> ll::coro::Coro
 BS_REGISTER_SELFTEST("scrolls.warp_stone_durability", [](Context& ctx) {
     ConfigGuard guard;
     auto&       p   = survivalPlayer(ctx);
-    auto&       rec = ctx.createWaystone(record(ctx, 470, "Stone Target"));
+    auto&       rec = ctx.createWaystone(record(ctx, 470, "Stone Target"), true);
     giveHand(ctx, p, item(ids::kWarpStone));
     auto& tp = service::get<service::ITeleport>();
     config::mut<ItemsConfig>().enableDurability = true;
@@ -186,7 +185,7 @@ BS_REGISTER_SELFTEST("scrolls.creative_keeps", [](Context& ctx) {
     config::mut<ItemsConfig>().enableDurability = true;
     auto& p = ctx.player();
     p.setPlayerGameType(GameType::Creative);
-    auto& rec = ctx.createWaystone(record(ctx, 480, "Creative Target"));
+    auto& rec = ctx.createWaystone(record(ctx, 480, "Creative Target"), true);
     auto& tp  = service::get<service::ITeleport>();
     giveHand(ctx, p, item(ids::kWarpScroll, 3));
     ctx.require(tp.warp(p, itemWarp(core::WarpSourceKind::WarpScroll, ids::kWarpScroll, rec.uid)).ok, "warp ok");

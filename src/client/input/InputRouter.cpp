@@ -58,6 +58,7 @@ float unpackX(std::uint64_t p) { return std::bit_cast<float>(static_cast<std::ui
 float unpackY(std::uint64_t p) { return std::bit_cast<float>(static_cast<std::uint32_t>(p)); }
 
 constexpr std::size_t                      BUTTONS = 3;
+std::array<std::atomic<bool>, BUTTONS> gButtonsDown{}; ///< physical button state (duplicate filter)
 std::array<std::atomic<bool>, BUTTONS>     gHeldButtons{};
 std::array<std::atomic<bool>, 256>         gHeldKeys{};
 std::array<std::atomic<bool>, 256>         gKeysDown{};
@@ -176,6 +177,7 @@ void releaseHeld(bool notifyLayers) {
         post([vk] { ui::UiRoot::get().dispatchKey(static_cast<int>(vk), false); });
     }
     for (auto& key : gKeysDown) key = false;
+    for (auto& b : gButtonsDown) b = false;
 }
 
 void onClientUpdate(ClientInstance& client) {
@@ -241,6 +243,14 @@ void onMouse(ll::event::MouseInputEvent& ev) {
     auto& held = gHeldButtons[static_cast<std::size_t>(button)];
     bool  down = ev.buttonData() == MouseAction::DataDown;
     bool  live = snap.inLevel.load() && snap.cursorScreen.load();
+    // One physical press can arrive twice (the window message and the GameInput mouse, e.g. with
+    // LeviHeadlessInput): a press of a button that is already down, or a release of one that is
+    // already up, is a duplicate. Consume it if the original was consumed, never dispatch it.
+    auto& isDown = gButtonsDown[static_cast<std::size_t>(button)];
+    if (isDown.exchange(down) == down) {
+        if (held.load()) ev.cancel();
+        return;
+    }
 
     bool consume;
     if (down) {

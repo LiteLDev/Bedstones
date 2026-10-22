@@ -54,8 +54,6 @@ Reply cooldownSet(Player* viewer, std::vector<Player*> const& targets, std::stri
 [[nodiscard]] std::int64_t nowMs();
 
 namespace detail {
-/// Selftests: the item the twinbound command hands out / looks for ("" = bedstones:twinbound_feather).
-void setFeatherItemForTest(std::string id);
 } // namespace detail
 
 } // namespace bs::feature::commands
