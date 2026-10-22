@@ -4,7 +4,7 @@
 # Screenshots: out/smoke/{hud,selftest,debug_screen}.png
 Save-Screenshot 'hud' | Out-Null
 $r = Invoke-SelfTest 'foundation.*'
-if ($r.Pass -lt 5) { throw "expected at least 5 foundation selftests to pass, got $($r.Pass)" }
+if ($r.Pass -lt 7) { throw "expected at least 7 foundation selftests to pass, got $($r.Pass)" }
 Save-Screenshot 'selftest' | Out-Null
 
 Wait-LogLine 'companion: server ready' 30 | Out-Null

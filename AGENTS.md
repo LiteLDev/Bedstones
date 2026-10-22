@@ -67,6 +67,7 @@ reference it with `tr(key, "English fallback")` without defining it.
 | `BS_REGISTER_CLIENT_MESSAGE("channel", fn)` / `BS_REGISTER_SERVER_MESSAGE("channel", fn)` | `net/Messages.h` / `client/net/ClientNet.h` | Named JSON channels client -> server / server -> client. |
 | `BS_REGISTER_TARGET_PROVIDER(TargetProvider{...})` | `service/TargetProviders.h` | Extra selection-list entries (feather partners, memorials, return portal). |
 | `BS_REGISTER_UI_LAYER(instance)` | `client/ui/UiRoot.h` | A layer drawn over vanilla screens / HUD (e.g. the inventory button). |
+| `BS_REGISTER_SCREEN_OPENER("name", fn)` | `service/ScreenOpeners.h` | Opens a screen this unit owns when another unit asks `service::openScreen(player, "name", args)` (table of names + args in the header). |
 
 Registrations live in .cpp files linked directly into the DLL, so they are never stripped.
 
@@ -92,6 +93,19 @@ Registrations live in .cpp files linked directly into the DLL, so they are never
   and `service::reset<I>()` in `uninstall()`. Use the seams instead of calling other units.
   Opening the selection menu = `service::get<ISelection>().open(player, source)`; warping =
   `service::get<ITeleport>().warp(player, {source, targetId})`.
+- **Screen links**: screens open each other by name through `service::openScreen` (selection ->
+  manage -> personal_settings -> manage_groups -> edit_group; selection header / shift-click ->
+  edit -> modifiers). `openScreen` returns false when the owning unit is absent: degrade gracefully
+  (hide or disable the button, `service::hasScreen(name)`).
+- **Block container** (`game/BlockContainer.h`): the 5-slot shard + modifier inventory of waystones
+  and warp plates, in `record.extra["container"]` (slot 0 shard, 1-4 modifiers).
+- **Groups** (`service::get<IGroups>()`, ids in `service::groups`): `groups(player)` and
+  `groupsOf(player, target)`; favorites are the explicit group `waystones:favorites` in
+  `playerData.groups[uid]`.
+- **Shared player-data keys** (`PlayerWaystoneData`): `cooldowns` = cooldown id ("waystones:inventory_button")
+  -> expiry epoch ms (U8 writes); `extra["returnPortal"]` = uid of the player's last Warp Portal
+  record (U5 writes, U4's Return Scroll reads); `extra["feather"]` (U6); `sortMode` /
+  `sortingIndex` (U10 / U11).
 - **Screens** (`net/Screens.h` + `client/ui/screen/Screens.h`): the server opens a screen id with a
   JSON model (`screens::open`), updates it (`screens::update`), receives actions
   (`BS_REGISTER_SCREEN_ACTIONS`). The client mod draws the registered native `Screen` (vanilla look

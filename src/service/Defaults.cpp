@@ -262,6 +262,52 @@ public:
     void onArrived(Actor&, WaystoneRecord const&) override {}
 };
 
+// ---- groups ----------------------------------------------------------------------------------------------
+
+class DefaultGroups final : public IGroups {
+public:
+    std::vector<core::WaystoneGroup> groups(Player& player) override {
+        std::vector<core::WaystoneGroup> out{
+            {std::string(groups::kFavorites), "Favorites", "favorites", "gold", true, false, -30},
+            {std::string(groups::kPlayers), "Players", "players", "green", true, false, -20},
+            {std::string(groups::kGlobal), "Global Waystones", "global", "yellow", true, false, -10},
+            {std::string(groups::kTeams), "Teams", "teams", "aqua", true, false, -5},
+            {groups::dimension(0), "Overworld", "dimension", "white", true, false, 0},
+            {groups::dimension(1), "The Nether", "dimension", "white", true, false, 0},
+            {groups::dimension(2), "The End", "dimension", "white", true, false, 0},
+        };
+        auto const& data = game::Waystones::get().playerData(player);
+        for (auto const& g : data.groupRegistry) {
+            auto it = std::find_if(out.begin(), out.end(), [&](auto const& x) { return x.id == g.id; });
+            if (it != out.end()) {
+                it->hidden    = g.hidden; // persisted state of an inbuilt group
+                it->sortIndex = g.inbuilt ? g.sortIndex : it->sortIndex;
+            } else {
+                out.push_back(g);
+            }
+        }
+        std::stable_sort(out.begin(), out.end(), [](auto const& a, auto const& b) {
+            return a.sortIndex != b.sortIndex ? a.sortIndex < b.sortIndex : a.name < b.name;
+        });
+        return out;
+    }
+    std::vector<std::string> groupsOf(Player& player, core::WarpTarget const& target) override {
+        std::vector<std::string> out;
+        auto const&              data = game::Waystones::get().playerData(player);
+        if (auto it = data.groups.find(target.id); it != data.groups.end()) out = it->second;
+        auto add = [&](std::string id) {
+            if (std::find(out.begin(), out.end(), id) == out.end()) out.push_back(std::move(id));
+        };
+        if (target.global) add(std::string(groups::kGlobal));
+        if (target.kind == "player") add(std::string(groups::kPlayers));
+        if (auto* r = game::Waystones::get().find(target.id); r && r->visibility == core::Visibility::Team) {
+            add(std::string(groups::kTeams));
+        }
+        if (target.kind != "player") add(groups::dimension(target.pos.dim));
+        return out;
+    }
+};
+
 } // namespace
 
 TargetProvider const* providerFor(std::string const& targetId) {
@@ -303,6 +349,10 @@ std::unique_ptr<IEditScreen> makeDefault<IEditScreen>() {
 template <>
 std::unique_ptr<IArrival> makeDefault<IArrival>() {
     return std::make_unique<DefaultArrival>();
+}
+template <>
+std::unique_ptr<IGroups> makeDefault<IGroups>() {
+    return std::make_unique<DefaultGroups>();
 }
 } // namespace detail
 
