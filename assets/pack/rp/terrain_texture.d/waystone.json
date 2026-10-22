@@ -1,0 +1,32 @@
+{
+  "bedstones_waystone": {
+    "textures": "textures/blocks/waystone/waystone"
+  },
+  "bedstones_mossy_waystone": {
+    "textures": "textures/blocks/waystone/mossy_waystone"
+  },
+  "bedstones_sandy_waystone": {
+    "textures": "textures/blocks/waystone/sandy_waystone"
+  },
+  "bedstones_deepslate_waystone": {
+    "textures": "textures/blocks/waystone/deepslate_waystone"
+  },
+  "bedstones_blackstone_waystone": {
+    "textures": "textures/blocks/waystone/blackstone_waystone"
+  },
+  "bedstones_end_stone_waystone": {
+    "textures": "textures/blocks/waystone/end_stone_waystone"
+  },
+  "bedstones_red_nether_bricks_waystone": {
+    "textures": "textures/blocks/waystone/red_nether_bricks_waystone"
+  },
+  "bedstones_purpur_waystone": {
+    "textures": "textures/blocks/waystone/purpur_waystone"
+  },
+  "bedstones_prismarine_waystone": {
+    "textures": "textures/blocks/waystone/prismarine_waystone"
+  },
+  "bedstones_mud_bricks_waystone": {
+    "textures": "textures/blocks/waystone/mud_bricks_waystone"
+  }
+}

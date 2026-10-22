@@ -1,0 +1,196 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "bedstones:deepslate_waystone",
+      "menu_category": {
+        "category": "construction"
+      },
+      "states": {
+        "bedstones:facing": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "bedstones:upper": [
+          0,
+          1
+        ]
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.bedstones:deepslate_waystone.name",
+      "minecraft:geometry": "geometry.bedstones_waystone_bottom",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "bedstones_deepslate_waystone",
+          "render_method": "opaque"
+        }
+      },
+      "minecraft:item_visual": {
+        "geometry": "geometry.bedstones_waystone_item",
+        "material_instances": {
+          "*": {
+            "texture": "bedstones_deepslate_waystone",
+            "render_method": "opaque"
+          }
+        }
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -7,
+          0,
+          -7
+        ],
+        "size": [
+          14,
+          16,
+          14
+        ]
+      },
+      "minecraft:selection_box": {
+        "origin": [
+          -8,
+          0,
+          -8
+        ],
+        "size": [
+          16,
+          16,
+          16
+        ]
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 5,
+        "item_specific_speeds": [
+          {
+            "item": {
+              "tags": "q.all_tags('minecraft:is_pickaxe', 'minecraft:wooden_tier')"
+            },
+            "destroy_speed": 2
+          },
+          {
+            "item": {
+              "tags": "q.all_tags('minecraft:is_pickaxe', 'minecraft:stone_tier')"
+            },
+            "destroy_speed": 4
+          },
+          {
+            "item": {
+              "tags": "q.all_tags('minecraft:is_pickaxe', 'minecraft:iron_tier')"
+            },
+            "destroy_speed": 6
+          },
+          {
+            "item": {
+              "tags": "q.all_tags('minecraft:is_pickaxe', 'minecraft:diamond_tier')"
+            },
+            "destroy_speed": 8
+          },
+          {
+            "item": {
+              "tags": "q.all_tags('minecraft:is_pickaxe', 'minecraft:netherite_tier')"
+            },
+            "destroy_speed": 9
+          },
+          {
+            "item": {
+              "tags": "q.all_tags('minecraft:is_pickaxe', 'minecraft:golden_tier')"
+            },
+            "destroy_speed": 12
+          }
+        ]
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 2000
+      },
+      "minecraft:movable": {
+        "movement_type": "immovable"
+      },
+      "minecraft:loot": "loot_tables/blocks/deepslate_waystone.json",
+      "minecraft:light_dampening": 0,
+      "minecraft:map_color": "#4f4f55"
+    },
+    "permutations": [
+      {
+        "components": {
+          "minecraft:transformation": {
+            "rotation": [
+              0,
+              180,
+              0
+            ]
+          }
+        },
+        "condition": "q.block_state('bedstones:facing') == 0"
+      },
+      {
+        "components": {
+          "minecraft:transformation": {
+            "rotation": [
+              0,
+              90,
+              0
+            ]
+          }
+        },
+        "condition": "q.block_state('bedstones:facing') == 1"
+      },
+      {
+        "components": {
+          "minecraft:transformation": {
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "condition": "q.block_state('bedstones:facing') == 2"
+      },
+      {
+        "components": {
+          "minecraft:transformation": {
+            "rotation": [
+              0,
+              270,
+              0
+            ]
+          }
+        },
+        "condition": "q.block_state('bedstones:facing') == 3"
+      },
+      {
+        "components": {
+          "minecraft:geometry": "geometry.bedstones_waystone_top",
+          "minecraft:collision_box": {
+            "origin": [
+              -6,
+              0,
+              -6
+            ],
+            "size": [
+              12,
+              16,
+              12
+            ]
+          },
+          "minecraft:selection_box": {
+            "origin": [
+              -7,
+              0,
+              -7
+            ],
+            "size": [
+              14,
+              16,
+              14
+            ]
+          }
+        },
+        "condition": "q.block_state('bedstones:upper') == 1"
+      }
+    ]
+  }
+}
