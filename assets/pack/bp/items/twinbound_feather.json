@@ -1,0 +1,17 @@
+{
+  "format_version": "1.21.40",
+  "minecraft:item": {
+    "description": {
+      "identifier": "bedstones:twinbound_feather",
+      "menu_category": { "category": "items" }
+    },
+    "components": {
+      "minecraft:icon": "bs_twinbound_feather",
+      "minecraft:max_stack_size": 1,
+      "minecraft:display_name": { "value": "item.bedstones:twinbound_feather" },
+      "minecraft:food": { "nutrition": 0, "saturation_modifier": 0, "can_always_eat": true },
+      "minecraft:use_modifiers": { "use_duration": 3600, "movement_modifier": 0.35 },
+      "minecraft:use_animation": "brush"
+    }
+  }
+}
