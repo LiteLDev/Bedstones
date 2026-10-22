@@ -46,7 +46,8 @@ void openManage(Player& player, core::WarpSource const& source);
 bool openPersonal(Player& player, std::string const& uid, core::WarpSource const& source);
 
 /// Personal Settings save (alias, user group, favorite) after validation. Returns false when
-/// `uid` is not a listed entry or `group` is not one of the player's user groups.
+/// `uid` is not a listed entry; a `group` that is not one of the player's user groups is ignored
+/// (the current group stays).
 bool savePersonal(Player& player, std::string const& uid, core::WarpSource const& source, std::string const& alias, std::string const& group, bool favorite);
 
 /// The player stands within 4 blocks of the waystone (Edit Waystone button).

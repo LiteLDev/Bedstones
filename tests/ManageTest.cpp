@@ -74,6 +74,8 @@ TEST(Manage, Alias) {
     EXPECT_EQ(normalizeAlias("  "), std::nullopt);
     EXPECT_EQ(normalizeAlias(""), std::nullopt);
     EXPECT_EQ(normalizeAlias("Home\n"), "Home");
+    EXPECT_EQ(normalizeAlias("  My Home "), "My Home");
+    EXPECT_EQ(normalizeAlias("a\x80" "b\xFF\xE5\xAE"), "ab"); // invalid / truncated UTF-8 dropped
     EXPECT_EQ(normalizeAlias(std::string(200, 'x'))->size(), kMaxAliasLength);
     std::string cjk;
     for (int i = 0; i < 130; ++i) cjk += "\xE5\xAE\xB6"; // 家

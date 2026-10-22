@@ -12,6 +12,7 @@
 #include "client/ui/widgets/Style.h"
 #include "client/ui/widgets/TextBox.h"
 #include "client/ui/widgets/Widgets.h"
+#include "core/manage/ManageRules.h"
 #include "mod/Log.h"
 
 namespace bs::client::screens::manage {
@@ -121,15 +122,9 @@ private:
     }
 
     void cycle(int dir) {
-        if (mGroups.empty()) return;
-        // "" (No Group) -> g0 -> g1 ... -> "" (core::manage::cycleGroup on the client side).
-        int n   = static_cast<int>(mGroups.size()) + 1;
-        int pos = 0;
-        for (std::size_t i = 0; i < mGroups.size(); ++i) {
-            if (mGroups[i].id == mGroupId) pos = static_cast<int>(i) + 1;
-        }
-        pos      = ((pos + (dir < 0 ? -1 : 1)) % n + n) % n;
-        mGroupId = pos == 0 ? std::string{} : mGroups[static_cast<std::size_t>(pos - 1)].id;
+        std::vector<std::string> ids;
+        for (auto const& g : mGroups) ids.push_back(g.id);
+        mGroupId = core::manage::cycleGroup(ids, mGroupId, dir);
         refreshGroupButton();
     }
 

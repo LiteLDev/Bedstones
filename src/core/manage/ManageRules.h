@@ -68,8 +68,8 @@ enum class DeleteAction {
 /// Maximum alias length in code points.
 inline constexpr std::size_t kMaxAliasLength = 128;
 
-/// The alias to store: control characters dropped, clipped to 128 code points; nullopt (= remove
-/// the alias) when blank.
+/// The alias to store: control characters and invalid UTF-8 dropped, clipped to 128 code points,
+/// surrounding spaces trimmed; nullopt (= remove the alias) when blank.
 [[nodiscard]] std::optional<std::string> normalizeAlias(std::string const& alias);
 
 /// Next (`dir` > 0) or previous (`dir` < 0) user group of the cycle "" (no group) -> g0 -> g1 ...

@@ -81,7 +81,7 @@ BS_REGISTER_SUBCOMMAND([](ll::command::CommandHandle& cmd) {
     using namespace bs::feature::manage;
     cmd.overload().text("debug").text("manage").execute([](CommandOrigin const& origin, CommandOutput& output) {
         auto* player = bs::commands::playerOf(origin);
-        if (!player) return output.error("Only players can open screens.");
+        if (!player || !bs::commands::isAdmin(origin)) return output.error("Only operators can open debug screens.");
         openManage(*player, commandSource());
         output.success("manage screen opened");
     });
@@ -93,7 +93,7 @@ BS_REGISTER_SUBCOMMAND([](ll::command::CommandHandle& cmd) {
     });
     cmd.overload().text("debug").text("manage").text("dump").execute([](CommandOrigin const& origin, CommandOutput& output) {
         auto* player = bs::commands::playerOf(origin);
-        if (!player) return output.error("Only players have a manage order.");
+        if (!player || !bs::commands::isAdmin(origin)) return output.error("Only operators can dump the manage order.");
         dump(*player);
         output.success("manage order logged");
     });

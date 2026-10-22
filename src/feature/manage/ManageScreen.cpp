@@ -136,6 +136,8 @@ bool deleteEntry(Player& player, core::WarpSource const& source, std::string con
     }
     }
     log().info("manage: deleted '{}' ({}) by {}", name, actionName(action), player.getRealName());
+    // The screen's own source was purged: its list can't be rebuilt any more.
+    if (id == source.fromUid && !ws.find(id)) net::screens::close(player);
     return true;
 }
 
@@ -157,9 +159,11 @@ bool setHidden(Player& player, core::WarpSource const& source, std::string const
 
 bool reorder(Player& player, core::WarpSource const& source, std::string const& action, nlohmann::json const& args) {
     auto  list = entries(player, source);
-    auto  ids  = idsOf(list);
     auto& ws   = game::Waystones::get();
-    auto& idx  = ws.playerData(player).sortingIndex;
+    // Only waystone records can be ordered: player data drops other ids (provider targets).
+    auto ids = idsOf(list);
+    std::erase_if(ids, [&](std::string const& id) { return ws.find(id) == nullptr; });
+    auto& idx = ws.playerData(player).sortingIndex;
     bool  ok   = false;
     if (action == "swap") {
         auto from = args.value("from", std::string{}), to = args.value("to", std::string{});

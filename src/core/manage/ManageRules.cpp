@@ -82,9 +82,14 @@ std::optional<std::string> normalizeAlias(std::string const& alias) {
     std::string out;
     std::size_t codePoints = 0;
     for (std::size_t i = 0; i < alias.size();) {
-        auto c   = static_cast<unsigned char>(alias[i]);
-        auto len = c < 0x80 ? 1u : (c >> 5) == 0x6 ? 2u : (c >> 4) == 0xE ? 3u : (c >> 3) == 0x1E ? 4u : 1u;
-        if (i + len > alias.size()) break; // truncated sequence
+        auto        c   = static_cast<unsigned char>(alias[i]);
+        std::size_t len = c < 0x80 ? 1 : (c >> 5) == 0x6 ? 2 : (c >> 4) == 0xE ? 3 : (c >> 3) == 0x1E ? 4 : 0;
+        bool        valid = len > 0 && i + len <= alias.size();
+        for (std::size_t k = 1; valid && k < len; ++k) valid = (static_cast<unsigned char>(alias[i + k]) & 0xC0) == 0x80;
+        if (!valid) { // invalid UTF-8 byte: dropped (the player data must stay valid JSON)
+            ++i;
+            continue;
+        }
         if (len == 1 && (c < 0x20 || c == 0x7F)) {
             ++i;
             continue;
@@ -96,7 +101,7 @@ std::optional<std::string> normalizeAlias(std::string const& alias) {
     }
     auto first = out.find_first_not_of(' ');
     if (first == std::string::npos) return std::nullopt;
-    return out;
+    return out.substr(first, out.find_last_not_of(' ') - first + 1);
 }
 
 std::string cycleGroup(std::vector<std::string> const& userGroups, std::string const& current, int dir) {

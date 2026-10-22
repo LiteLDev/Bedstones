@@ -72,6 +72,11 @@ nlohmann::json buildModel(Player& player, Entry const& e, core::WarpSource const
     };
 }
 
+/// Back to Personal Settings after a refused link, or to Manage when the entry is gone.
+void reopen(Player& player, std::string const& uid, core::WarpSource const& source) {
+    if (!openPersonal(player, uid, source)) openManage(player, source);
+}
+
 void handleAction(Player& player, ScreenSession& session, std::string const& action, nlohmann::json const& args) {
     if (action == "close") return;
     auto source = core::WarpSource::fromJson(session.context.value("source", nlohmann::json::object()));
@@ -83,7 +88,7 @@ void handleAction(Player& player, ScreenSession& session, std::string const& act
     if (action == "save") return openManage(player, source);
     if (action == "manage_groups") {
         if (!service::openScreen(player, "manage_groups", {{"source", source.toJson()}, {"from", kPersonalScreen}, {"uid", uid}})) {
-            openPersonal(player, uid, source);
+            reopen(player, uid, source);
         }
         return;
     }
@@ -91,7 +96,7 @@ void handleAction(Player& player, ScreenSession& session, std::string const& act
     auto e = findListed(player, uid, source);
     if (!e || !canOpenEdit(player, *e)) {
         log().info("personal settings: edit of {} refused for {}", uid, player.getRealName());
-        openPersonal(player, uid, source);
+        reopen(player, uid, source);
         return;
     }
     log().info("personal settings: edit waystone '{}' by {}", e->target.name, player.getRealName());
@@ -167,19 +172,29 @@ void showFallback(Player& player, ScreenSession& session) {
 
 } // namespace
 
-bool savePersonal(Player& player, std::string const& uid, core::WarpSource const& source, std::string const& alias, std::string const& group, bool favorite) {
+bool savePersonal(
+    Player&                 player,
+    std::string const&      uid,
+    core::WarpSource const& source,
+    std::string const&      alias,
+    std::string const&      requestedGroup,
+    bool                    favorite
+) {
     auto e = findListed(player, uid, source);
     if (!e) {
         log().info("personal settings: save refused for {} ({} is not listed)", player.getRealName(), uid);
         return false;
     }
-    auto ids = userGroupIds(userGroups(player));
+    auto  ids   = userGroupIds(userGroups(player));
+    auto& ws    = game::Waystones::get();
+    auto& data  = ws.playerData(player);
+    auto  group = requestedGroup;
     if (!group.empty() && std::find(ids.begin(), ids.end(), group) == ids.end()) {
-        log().info("personal settings: save refused for {} (unknown group {})", player.getRealName(), group);
-        return false;
+        // Unknown (deleted / forged) group: keep the current one, still save the rest.
+        log().info("personal settings: unknown group {} ignored for {}", group, player.getRealName());
+        auto it = data.groups.find(uid);
+        group   = it == data.groups.end() ? std::string{} : core::manage::userGroupOf(it->second, ids);
     }
-    auto& ws   = game::Waystones::get();
-    auto& data = ws.playerData(player);
     auto  clean = core::manage::normalizeAlias(alias);
     if (clean) data.aliases[uid] = *clean;
     else data.aliases.erase(uid);

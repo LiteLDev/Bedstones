@@ -68,6 +68,10 @@ public:
     void setModel(nlohmann::json const& model) override {
         mTitle     = model.value("title", ctr("gui.waystones.manage_waystones.title", "Manage Waystones"));
         mHasGroups = model.value("hasManageGroups", false);
+        // The server answers every list action with one refresh. While answers are outstanding the
+        // rows already show the optimistic result (e.g. several swaps of one drag): an older
+        // intermediate order must not replace it.
+        if (mPending > 0 && --mPending > 0) return;
         mRows.clear();
         for (auto const& r : model.value("rows", nlohmann::json::array())) {
             mRows.push_back({
@@ -269,13 +273,19 @@ private:
         }
         if (parts.action.contains(x, y)) {
             if (row.canDelete) {
-                if (shift()) action("delete", {{"id", row.id}});
+                if (shift()) listAction("delete", {{"id", row.id}});
             } else if (row.canHide || row.hidden) {
                 row.hidden = !row.hidden; // optimistic; the server answers with the real state
-                action("set_hidden", {{"id", row.id}, {"hidden", row.hidden}});
+                listAction("set_hidden", {{"id", row.id}, {"hidden", row.hidden}});
             }
         }
         return true;
+    }
+
+    /// An action the server answers with a model refresh.
+    void listAction(std::string const& name, nlohmann::json args) {
+        ++mPending;
+        action(name, std::move(args));
     }
 
     /// Double-click: to the top; shift-double-click: to the bottom.
@@ -287,7 +297,7 @@ private:
         if (top) mRows.insert(mRows.begin(), row);
         else mRows.push_back(row);
         filter();
-        action(top ? "move_top" : "move_bottom", {{"id", id}});
+        listAction(top ? "move_top" : "move_bottom", {{"id", id}});
     }
 
     /// One swap per row passed, like Waystones' drag (each step sends a swap packet).
@@ -300,7 +310,7 @@ private:
             int next = cur + (target > cur ? 1 : -1);
             auto& a  = mRows[mVisible[static_cast<std::size_t>(cur)]];
             auto& b  = mRows[mVisible[static_cast<std::size_t>(next)]];
-            action("swap", {{"from", a.id}, {"to", b.id}});
+            listAction("swap", {{"from", a.id}, {"to", b.id}});
             std::swap(a, b);
             cur = next;
         }
@@ -327,6 +337,7 @@ private:
     double                mNow = 0, mLastClickAt = -1;
     std::string           mLastClickId, mDragId;
     bool                  mShift = false, mLogged = false;
+    int                   mPending = 0; ///< list actions not answered yet
 };
 
 } // namespace
