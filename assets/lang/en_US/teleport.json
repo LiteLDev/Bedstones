@@ -1,0 +1,13 @@
+{
+  "chat.waystones.waystone_missing": "The waystone you tried to teleport to is currently being moved or has gone missing.",
+  "chat.waystones.cannot_transport_leashed": "You cannot take leashed mobs with you",
+  "chat.waystones.cannot_transport_leashed_dimensional": "You cannot take leashed mobs with you between worlds",
+  "chat.waystones.cannot_transport_this_leashed": "You cannot take this mob with you",
+  "chat.waystones.not_enough_xp": "You do not have enough experience to teleport.",
+  "chat.waystones.teleport_no_longer_valid": "The teleport could not be completed.",
+  "chat.waystones.source_item_missing": "You stopped holding the item to teleport.",
+  "chat.waystones.source_waystone_out_of_range": "You moved too far away from the waystone.",
+  "chat.waystones.teleport_failed": "The teleport failed.",
+  "chat.waystones.destination_out_of_bounds": "The destination is outside the world bounds.",
+  "chat.waystones.destination_chunk_load_failed": "The destination could not be loaded."
+}
