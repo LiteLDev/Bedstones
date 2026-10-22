@@ -23,7 +23,7 @@ $lower = @(
 )
 $upper = @(
     (New-Box 4 0 4 8 7 8 $plain),
-    (New-Box 1 7 2 14 3 12 @{ rot = @(-22.5, 0, 0); pivot = @(8, 8.5, 8); faceUv = @{ up = @(17, 2, 14, 12) } })
+    (New-Box 1 7 2 14 3 12 @{ rot = @(22.5, 0, 0); pivot = @(8, 8.5, 8); faceUv = @{ up = @(17, 2, 14, 12) } })
 )
 Save-StoneGeometry (Join-Path $rp 'models/blocks/portstone.geo.json') 'portstone' $lower $upper
 

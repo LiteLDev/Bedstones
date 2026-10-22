@@ -82,9 +82,15 @@ Start-Sleep -Milliseconds 1500
 Save-Screenshot 'portstone-selection' | Out-Null
 Close-Screen
 
-# 6. Item tooltips in the inventory (hover the hotbar slots).
+# 6. Item tooltips in the inventory (hover the hotbar slots of the creative inventory).
 Invoke-Chat '/replaceitem entity @s slot.hotbar 2 bedstones:blue_portstone'
 Open-Inventory
 Save-Screenshot 'inventory' | Out-Null
+Move-Mouse 0.366 0.803 -Relative
+Start-Sleep -Milliseconds 800
+Save-Screenshot 'tooltip-sharestone' | Out-Null
+Move-Mouse 0.432 0.803 -Relative
+Start-Sleep -Milliseconds 800
+Save-Screenshot 'tooltip-portstone' | Out-Null
 Close-Screen
 Assert-NoErrors
