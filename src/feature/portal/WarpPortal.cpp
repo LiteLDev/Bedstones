@@ -122,6 +122,12 @@ void showError(Player& player, std::string const& key, std::string const& fallba
     game::actionBar(player, "§4" + trFor(player, key, fallback));
 }
 
+/// "There is no space to open a Warp Portal here." (dark red chat line, like Waystones).
+service::WarpResult noSpace(Player& player) {
+    showNoSpace(player);
+    return service::WarpResult::fail("chat.waystones.warp_portal_no_space", "There is no space to open a Warp Portal here.");
+}
+
 // ---- entering ----------------------------------------------------------------------------------
 
 void enterPortal(Actor& actor, std::string const& uid) {
@@ -133,9 +139,8 @@ void enterPortal(Actor& actor, std::string const& uid) {
         auto& player = static_cast<Player&>(actor);
         auto& tp     = service::get<service::ITeleport>();
         if (target.empty() || !tp.resolve(player, target)) {
-            showError(player, "chat.waystones.warp_portal_attunement_lost", "This portal has closed because its target was destroyed.");
-            log().info("warp portal closed: target of {} is gone ({})", uid, player.getRealName());
-            removePortal(uid, false);
+            game::chat(player, trFor(player, "chat.waystones.warp_portal_attunement_lost", "This portal has closed because its target was destroyed."));
+            removePortal(uid, true, "target lost");
             return;
         }
         service::WarpRequest req;
@@ -154,7 +159,7 @@ void enterPortal(Actor& actor, std::string const& uid) {
     // Other entities (mobs, items): only waystone-record targets, no requirements.
     auto* dest = game::Waystones::get().find(target);
     if (!dest) {
-        removePortal(uid, false);
+        removePortal(uid, true, "target lost");
         return;
     }
     auto d = frontOf(*dest);
@@ -194,13 +199,16 @@ void tick() {
         BlockPos lower = game::blockPos(r->pos);
         if (!region->hasChunksAt(lower, 0, false)) continue; // frozen while unloaded (like a block entity)
         if (game::blockIdAt(*region, lower) != portalId()) {
-            log().info("warp portal closed: block of {} is gone", uid);
-            removePortal(uid, false);
+            removePortal(uid, false, "block gone");
             continue;
         }
         if (--stateOf(*r).ticksLeft <= 0) {
-            removePortal(uid, true);
+            removePortal(uid, true, "expired");
             continue;
+        }
+        // Idle particles rising from the bottom of the portal.
+        if ((gTick % 5) == 0) {
+            game::particles(r->pos.dim, "minecraft:mob_portal", center(r->pos, 0.1f), 1, 0.4f);
         }
         tickPortal(*region, uid);
     }
@@ -229,7 +237,7 @@ std::optional<service::WarpResult> interceptPortalScroll(Player& player, service
         return fail("chat.waystones.waystone_missing", "The waystone you tried to teleport to is currently being moved or has gone missing.");
     }
     auto spot = portalSpotFor(player);
-    if (!spot) return fail("chat.waystones.warp_portal_no_space", "There is no space to open a Warp Portal here.");
+    if (!spot) return noSpace(player);
     if (!request.skipRequirements) {
         auto& reqs = service::get<service::IRequirements>();
         auto  req  = reqs.resolve(player, request.source, *it);
@@ -239,13 +247,13 @@ std::optional<service::WarpResult> interceptPortalScroll(Player& player, service
         reqs.consume(player, req);
     }
     int  dim = static_cast<int>(player.getDimensionId());
-    auto uid = spawnPortal(dim, *spot, game::opposite(game::playerFacing(player)), request.targetId, &player);
-    if (uid.empty()) return fail("chat.waystones.warp_portal_no_space", "There is no space to open a Warp Portal here.");
+    auto uid = spawnPortal(dim, *spot, game::opposite(game::playerFacing(player)), request.targetId);
+    if (uid.empty()) return noSpace(player);
     game::consumeAt(player, loc, 1, true);
     auto c = center(core::GlobalPos{dim, spot->x, spot->y, spot->z});
     game::soundAround(dim, "portal.travel", c, 0.25f, 1.4f);
-    game::particles(dim, "minecraft:mob_portal", c, 96, 1.0f);
-    game::particles(dim, "bedstones:reverse_portal", c, 48, 1.0f);
+    game::particles(dim, "minecraft:mob_portal", c, 96, 0.6f);
+    game::particles(dim, "bedstones:reverse_portal", c, 48, 0.45f);
     log().info("warp portal opened: {} -> {} by {}", uid, request.targetId, player.getRealName());
     return service::WarpResult::success();
 }
@@ -293,7 +301,7 @@ std::optional<core::portal::Cell> portalSpotFor(Player& player) {
     return core::portal::findPortalSpot(feet.x, feet.y, feet.z, -std::sin(yaw), std::cos(yaw), solid, replaceable);
 }
 
-std::string spawnPortal(int dim, core::portal::Cell lower, int facing, std::string const& targetId, Player const* owner) {
+std::string spawnPortal(int dim, core::portal::Cell lower, int facing, std::string const& targetId) {
     auto& ws     = game::Waystones::get();
     auto* region = regionFor(dim);
     if (!region || !ws.available()) return {};
@@ -305,11 +313,7 @@ std::string spawnPortal(int dim, core::portal::Cell lower, int facing, std::stri
     rec.style     = std::string(ids::kWarpPortal);
     rec.facing    = facing & 3;
     rec.transient = true;
-    rec.origin    = core::Origin::Player;
-    if (owner) {
-        rec.ownerUid  = game::Waystones::playerKey(*owner);
-        rec.ownerName = owner->getRealName();
-    }
+    rec.origin    = core::Origin::Player; // no owner, like Waystones' portal records
     rec.visibility               = core::Visibility::ShardOnly;
     rec.extra[kExtraTarget]      = targetId;
     rec.extra[kExtraTicksLeft]   = core::portal::kPortalLifetimeTicks;
@@ -323,7 +327,7 @@ std::string spawnPortal(int dim, core::portal::Cell lower, int facing, std::stri
     return r->uid;
 }
 
-void removePortal(std::string const& uid, bool expired) {
+void removePortal(std::string const& uid, bool effects, std::string_view reason) {
     auto* r = portalRecord(uid);
     if (!r) return;
     auto pos = r->pos;
@@ -333,14 +337,18 @@ void removePortal(std::string const& uid, bool expired) {
             if (game::blockIdAt(*region, p) == portalId()) game::clearBlock(*region, p);
         }
     }
-    if (expired) {
+    if (effects) {
         auto c = center(pos);
-        game::soundAround(pos.dim, "random.fizz", c, 0.5f, 2.6f);
-        game::particles(pos.dim, "bedstones:reverse_portal", c, 32, 0.6f);
+        game::soundAround(pos.dim, "random.fizz", c, 0.5f, 1.2f);
+        game::particles(pos.dim, "bedstones:reverse_portal", c, 32, 0.5f);
     }
     gPortals.erase(uid);
     game::Waystones::get().remove(uid);
-    log().info("warp portal closed: {} ({})", uid, expired ? "expired" : "removed");
+    log().info("warp portal closed: {} ({})", uid, reason);
+}
+
+void showNoSpace(Player& player) {
+    game::chat(player, "§4" + trFor(player, "chat.waystones.warp_portal_no_space", "There is no space to open a Warp Portal here."));
 }
 
 void setTicksLeft(std::string const& uid, int ticks) {

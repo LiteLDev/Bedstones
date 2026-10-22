@@ -4,9 +4,9 @@
     "description": {
       "identifier": "bedstones:memorial_label",
       "materials": { "default": "entity_alphatest" },
-      "textures": {},
-      "geometry": {},
-      "render_controllers": []
+      "textures": { "default": "textures/particle/bedstones_particles" },
+      "geometry": { "default": "geometry.bedstones.memorial_label" },
+      "render_controllers": ["controller.render.default"]
     }
   }
 }

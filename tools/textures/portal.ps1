@@ -86,23 +86,24 @@ for ($f = 0; $f -lt 8; $f++) {
 Save-PixelArt -Rows $rows.ToArray() -Palette $portalPal -Path "$rp/blocks/warp_portal.png" -Scale $scale
 
 # ---- Fleeting Memorial: 32 x 16, left = engraved front, right = plain weathered stone -----------
+# The slab is 1 px thick (Waystones' shape): body 10x12 at (3,2), cap 7x1 at (5,1), base 7x1 at (4,14).
 $front = @(
-    'ssssssssssssssss',
-    'sssmmmmmmmmmmsss',
-    'ssmlllllllllllms',
-    'ssmlllllllllllms',
-    'ssmllllddlllllms',
-    'ssmllllddlllllms',
-    'ssmlldddddlllllm',
-    'ssmlldddddlllllm',
-    'ssmllllddllllllm',
-    'ssmllllddllllllm',
-    'ssmllllddllllllm',
-    'ssmlllllllllllms',
-    'ssmlllllllllllms',
-    'sssmmmmmmmmmmsss',
-    'ssssssssssssssss',
-    'ssssssssssssssss'
+    '................',
+    '.....mmmmmmm....',
+    '...mmmmmmmmmm...',
+    '...mlllllllsm...',
+    '...mllllalllm...',
+    '...mlllaaallm...',
+    '...mllllalllm...',
+    '...mllllalllm...',
+    '...mllllllllm...',
+    '...mlddddddlm...',
+    '...mllllllllm...',
+    '...mlddddllsm...',
+    '...mllllllllm...',
+    '...smmmmmmmms...',
+    '....sssssss.....',
+    '................'
 )
 $plain = for ($y = 0; $y -lt 16; $y++) {
     $line = ''
@@ -113,7 +114,7 @@ $plain = for ($y = 0; $y -lt 16; $y++) {
     $line
 }
 $memorial = for ($y = 0; $y -lt 16; $y++) { $front[$y] + $plain[$y] }
-$memorialPal = @{ s = '#4b4853'; m = '#5c5966'; l = '#6d6a78'; d = '#2f2d35' }
+$memorialPal = @{ s = '#4b4853'; m = '#5c5966'; l = '#6d6a78'; d = '#2f2d35'; a = '#813c9e' }
 Save-PixelArt -Rows $memorial -Palette $memorialPal -Path "$rp/blocks/fleeting_memorial.png" -Scale $scale
 
 # ---- Particle sheet: [0,0] soft round dot (portal), [4,0] small speck (ash) ---------------------

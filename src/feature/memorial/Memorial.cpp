@@ -79,7 +79,7 @@ void spawnLabel(BlockSource& region, core::WaystoneRecord const& r) {
         log().warn("fleeting memorial: could not spawn the name label of {}", r.uid);
         return;
     }
-    mob->setNameTag(r.ownerName);
+    mob->setNameTag("§5" + r.ownerName); // purple, like the name engraved by Waystones
 }
 
 void removeLabels(BlockSource& region, core::GlobalPos const& p) {
@@ -232,14 +232,15 @@ std::string onPlayerDeath(Player& player) {
         log().info("fleeting memorial: no space near {}", player.getRealName());
         return {};
     }
-    int  dim = static_cast<int>(player.getDimensionId());
-    auto uid = spawnMemorial(player, dim, *spot, game::opposite(game::playerFacing(player)));
+    int  dim    = static_cast<int>(player.getDimensionId());
+    int  facing = game::opposite(game::playerFacing(player));
+    auto uid    = spawnMemorial(player, dim, *spot, facing);
     if (uid.empty()) return {};
     game::consumeAt(player, *epitaph, 1, false);
     // Totem animation + sound (the Bedrock client draws its own totem model).
     if (auto level = ll::service::getLevel()) level->broadcastActorEvent(player, ActorEvent::TalismanActivate, 0, std::nullopt);
     game::soundAround(dim, "random.totem", player.getPosition(), 1.0f, 1.0f);
-    log().info("fleeting memorial placed: {} for {} at {} {} {}", uid, player.getRealName(), spot->x, spot->y, spot->z);
+    log().info("fleeting memorial placed: {} for {} at {} {} {} facing {}", uid, player.getRealName(), spot->x, spot->y, spot->z, facing);
     return uid;
 }
 
@@ -253,7 +254,7 @@ std::string spawnMemorial(Player const& owner, int dim, core::portal::Cell cell,
     if (!block || !game::setBlock(*region, pos, *block)) return {};
     core::WaystoneRecord rec;
     rec.type       = std::string(core::types::kFleetingMemorial);
-    rec.name       = tr("container.waystones.fleeting_memorial", "Fleeting Memorial");
+    rec.name       = tr("block.waystones.fleeting_memorial", "Fleeting Memorial");
     rec.pos        = {dim, cell.x, cell.y, cell.z};
     rec.style      = std::string(ids::kFleetingMemorial);
     rec.facing     = facing & 3;

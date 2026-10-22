@@ -12,6 +12,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "core/Waystone.h"
 #include "core/portal/Placement.h"
@@ -30,9 +31,13 @@ inline constexpr char const* kExtraReturnPortal = "returnPortal";
 [[nodiscard]] std::optional<core::portal::Cell> portalSpotFor(Player& player);
 
 /// Places the portal blocks at `lower` and creates its record. Returns the record uid ("" on failure).
-std::string spawnPortal(int dim, core::portal::Cell lower, int facing, std::string const& targetId, Player const* owner);
-/// Removes a portal (blocks + record). `expired` plays the closing effects.
-void removePortal(std::string const& uid, bool expired);
+std::string spawnPortal(int dim, core::portal::Cell lower, int facing, std::string const& targetId);
+/// Removes a portal (blocks + record); `effects` plays the closing sound and particles. `reason`
+/// is logged ("expired", "target lost", ...).
+void removePortal(std::string const& uid, bool effects, std::string_view reason);
+
+/// Tells the player there is no room for a portal (dark red chat line, like Waystones).
+void showNoSpace(Player& player);
 
 /// The Portal Scroll finished charging in `hand`: checks for space, then opens the selection menu.
 /// Returns false when the portal has no space (error shown in the action bar).

@@ -22,8 +22,8 @@ inline constexpr int kPortalLifetimeTicks = 6000;
 inline constexpr int kPortalReuseCooldownTicks = 20;
 
 /// Where a Warp Portal opens for a player at feet position (px, py, pz) looking along the
-/// horizontal direction (lookX, lookZ): 3, then 4 blocks ahead, scanning 5 cells down from y+2
-/// for a solid block with 3 replaceable cells above it. Returns the lower portal cell.
+/// horizontal direction (lookX, lookZ): 3, then 4 blocks ahead, scanning 6 cells down from
+/// floor(y + 2) for a solid block with 3 replaceable cells above it. Returns the lower portal cell.
 [[nodiscard]] std::optional<Cell> findPortalSpot(
     double               px,
     double               py,
@@ -35,8 +35,8 @@ inline constexpr int kPortalReuseCooldownTicks = 20;
 );
 
 /// Where a Fleeting Memorial goes for a player who died in cell `death`: the cell above it if
-/// replaceable, otherwise the first replaceable cell at dy 0..3 within horizontal radius 1..2
-/// around that cell.
+/// replaceable, otherwise the first replaceable cell of the squares of radius 1, then 2 around
+/// the death cell, at dy 0..3.
 [[nodiscard]] std::optional<Cell> findMemorialSpot(Cell death, CellPredicate const& replaceable);
 
 } // namespace bs::core::portal

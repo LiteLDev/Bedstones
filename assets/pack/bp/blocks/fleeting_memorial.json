@@ -14,8 +14,8 @@
       "minecraft:material_instances": {
         "*": { "texture": "bedstones_fleeting_memorial", "render_method": "alpha_test" }
       },
-      "minecraft:collision_box": { "origin": [-7, 0, -3], "size": [14, 14, 6] },
-      "minecraft:selection_box": { "origin": [-7, 0, -3], "size": [14, 14, 6] },
+      "minecraft:collision_box": { "origin": [-5, 1, 0], "size": [10, 14, 1] },
+      "minecraft:selection_box": { "origin": [-5, 1, 0], "size": [10, 14, 1] },
       "minecraft:destructible_by_mining": { "seconds_to_destroy": 2.0 },
       "minecraft:destructible_by_explosion": { "explosion_resistance": 6 },
       "minecraft:movable": { "movement_type": "immovable" },

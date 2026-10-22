@@ -110,7 +110,7 @@ BS_REGISTER_SELFTEST("portal.enter_teleports", [](Context& ctx) -> ll::coro::Cor
     auto  tuid   = target.uid;
     portal::clearCooldowns();
     ctx.require(bs::game::blockWith(kPortal) != nullptr, "warp portal block registered");
-    auto uid = portal::spawnPortal(0, {feet.x + 3, feet.y, feet.z}, 1, tuid, &p);
+    auto uid = portal::spawnPortal(0, {feet.x + 3, feet.y, feet.z}, 1, tuid);
     ctx.require(!uid.empty(), "portal spawned");
     ctx.cleanupWaystone(uid);
     ctx.cleanupBlock({0, feet.x + 3, feet.y, feet.z});
@@ -145,7 +145,7 @@ BS_REGISTER_SELFTEST("portal.expiry", [](Context& ctx) -> ll::coro::CoroTask<> {
     ctx.require(co_await arena::place(ctx, p, feet, arena::Floor{-1, 6, -2, 2}), "test area loaded");
     auto& target = arena::target(ctx, p, {0, feet.x + 15, feet.y, feet.z}, "Expiry Target");
     bs::core::GlobalPos lower{0, feet.x + 3, feet.y, feet.z};
-    auto                uid = portal::spawnPortal(0, {lower.x, lower.y, lower.z}, 1, target.uid, &p);
+    auto                uid = portal::spawnPortal(0, {lower.x, lower.y, lower.z}, 1, target.uid);
     ctx.require(!uid.empty(), "portal spawned");
     ctx.cleanupWaystone(uid);
     ctx.cleanupBlock(lower);
@@ -165,7 +165,7 @@ BS_REGISTER_SELFTEST("portal.target_destroyed", [](Context& ctx) -> ll::coro::Co
     ctx.require(co_await arena::place(ctx, p, feet, arena::Floor{-1, 6, -2, 2}), "test area loaded");
     portal::clearCooldowns();
     bs::core::GlobalPos lower{0, feet.x + 3, feet.y, feet.z};
-    auto                uid = portal::spawnPortal(0, {lower.x, lower.y, lower.z}, 1, "00000000-0000-4000-8000-000000000000", &p);
+    auto                uid = portal::spawnPortal(0, {lower.x, lower.y, lower.z}, 1, "00000000-0000-4000-8000-000000000000");
     ctx.require(!uid.empty(), "portal spawned");
     ctx.cleanupWaystone(uid);
     ctx.cleanupBlock(lower);

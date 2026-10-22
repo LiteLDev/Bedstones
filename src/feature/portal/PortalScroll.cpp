@@ -108,7 +108,7 @@ int chargeCount() { return gCharged; }
 
 bool onScrollCharged(Player& player, int hand) {
     if (!portalSpotFor(player)) {
-        game::actionBar(player, "§4" + trFor(player, "chat.waystones.warp_portal_no_space", "There is no space to open a Warp Portal here."));
+        showNoSpace(player);
         log().info("portal scroll: no space for {}", player.getRealName());
         return false;
     }
