@@ -1,0 +1,6 @@
+{
+  "tooltip.waystones.xp_requirement": "Experience Cost: {}",
+  "tooltip.waystones.level_requirement": "Level Cost: {}",
+  "tooltip.waystones.cooldown_requirement": "Cooldown: {} seconds",
+  "tooltip.waystones.item_requirement": "Item Cost: {} {}"
+}
