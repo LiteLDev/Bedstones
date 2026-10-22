@@ -1,0 +1,12 @@
+{
+  "gui.waystones.inventory.return_to_waystone": "返回传送石",
+  "gui.waystones.inventory.return_to_nearest_waystone": "返回最近的传送石",
+  "gui.waystones.inventory.no_waystones_activated": "你还没有激活任何传送石。",
+  "gui.waystones.inventory.confirm_return": "你确定要传送回这个传送石吗？",
+  "gui.waystones.inventory.confirm_return_bound_to": "绑定到：{}",
+  "bs.inventorybutton.cooldown": "冷却：{} 秒",
+  "bs.inventorybutton.xp_cost": "经验：{} 点",
+  "bs.inventorybutton.yes": "是",
+  "bs.inventorybutton.no": "否",
+  "bs.inventorybutton.disabled": "此服务器已禁用物品栏按钮。"
+}
