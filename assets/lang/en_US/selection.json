@@ -1,0 +1,21 @@
+{
+  "gui.waystones.waystone_selection.title": "Select your destination",
+  "gui.waystones.waystone_selection.admin_title": "Select which waystone of {} you would like to visit:",
+  "gui.waystones.waystone_selection.current_location": "Current Location: ",
+  "gui.waystones.waystone_selection.no_waystones_activated": "You have not activated any waystones yet.",
+  "gui.waystones.waystone_selection.no_sharestones": "There are no matching Sharestones to teleport to.",
+  "gui.waystones.waystone_selection.sort": "Sort: {}",
+  "gui.waystones.waystone_selection.sort.manual": "Manual",
+  "gui.waystones.waystone_selection.sort.name": "By Name",
+  "gui.waystones.waystone_selection.sort.distance": "By Distance",
+  "gui.waystones.waystone_selection.manage_waystones": "Manage Waystones",
+  "bs.selection.unnamed": "<unnamed>",
+  "bs.selection.edit_current": "Edit Waystone",
+  "bs.selection.tooltip.xp_cost": "Experience Cost: {}",
+  "bs.selection.tooltip.level_cost": "Level Cost: {}",
+  "bs.selection.tooltip.cooldown": "Cooldown: {} seconds",
+  "bs.selection.tooltip.item_cost": "Item Cost: {} {}",
+  "bs.selection.form.levels": "{} Levels",
+  "bs.selection.form.current": "current",
+  "bs.selection.form.edit_current": "Edit current waystone"
+}
