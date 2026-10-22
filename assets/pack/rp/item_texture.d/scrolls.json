@@ -1,0 +1,7 @@
+{
+  "bedstones_warp_stone": { "textures": "textures/items/warp_stone" },
+  "bedstones_warp_scroll": { "textures": "textures/items/warp_scroll" },
+  "bedstones_return_scroll": { "textures": "textures/items/return_scroll" },
+  "bedstones_blank_scroll": { "textures": "textures/items/blank_scroll" },
+  "bedstones_bound_scroll": { "textures": "textures/items/bound_scroll" }
+}

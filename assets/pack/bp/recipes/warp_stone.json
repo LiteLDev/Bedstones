@@ -1,0 +1,15 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": { "identifier": "bedstones:warp_stone" },
+    "tags": ["crafting_table"],
+    "pattern": ["DED", "EGE", "DED"],
+    "key": {
+      "D": { "item": "minecraft:amethyst_shard" },
+      "E": { "item": "minecraft:ender_pearl" },
+      "G": { "item": "minecraft:emerald" }
+    },
+    "unlock": [{ "item": "minecraft:ender_pearl" }],
+    "result": { "item": "bedstones:warp_stone" }
+  }
+}

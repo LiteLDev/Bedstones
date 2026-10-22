@@ -1,0 +1,5 @@
+{
+  "tooltip.waystones.bound_to": "绑定至：{}",
+  "tooltip.waystones.blank_scroll": "对传送石碑使用此卷轴以进行绑定。",
+  "chat.waystones.scroll_not_yet_bound": "此卷轴尚未绑定到传送石碑。"
+}

@@ -1,0 +1,14 @@
+{
+  "format_version": "1.21.40",
+  "minecraft:item": {
+    "description": {
+      "identifier": "bedstones:blank_scroll",
+      "menu_category": { "category": "items" }
+    },
+    "components": {
+      "minecraft:icon": "bedstones_blank_scroll",
+      "minecraft:display_name": { "value": "item.bedstones:blank_scroll.name" },
+      "minecraft:max_stack_size": 64
+    }
+  }
+}
