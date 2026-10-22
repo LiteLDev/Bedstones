@@ -81,15 +81,18 @@ public:
             tick(ev.level());
         }));
         // Taking damage cancels the charge (docs/SPEC.md §3.13).
-        mListeners.push_back(bus.emplaceListener<ll::event::ActorHurtEvent>([](ll::event::ActorHurtEvent& ev) {
+        mListeners.push_back(bus.emplaceListener<ll::event::ActorHurtEvent>(
+            [](ll::event::ActorHurtEvent& ev) {
             auto& actor = ev.self();
-            if (!actor.isPlayer() || gCharges.empty()) return;
+            if (ev.isCancelled() || ev.damage() <= 0.f || !actor.isPlayer() || gCharges.empty()) return;
             auto& player = static_cast<Player&>(actor);
             auto  it     = gCharges.find(game::Waystones::playerKey(player));
             if (it == gCharges.end() || it->second.over) return;
             it->second.over = true;
             if (usingItem(player)) player.stopUsingItem();
-        }));
+            },
+            ll::event::EventPriority::Lowest
+        ));
     }
     void uninstall() {
         auto& bus = ll::event::EventBus::getInstance();

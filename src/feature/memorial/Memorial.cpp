@@ -86,28 +86,6 @@ void removeLabels(BlockSource& region, core::GlobalPos const& p) {
     for (Actor* a : labelsAt(region, p)) a->despawn();
 }
 
-/// Landing spot for a warp to a memorial: in front of it, or on the memorial itself (it is
-/// removed right after the warp).
-service::Destination landingFor(core::WaystoneRecord const& r) {
-    service::Destination d;
-    d.block       = r.pos;
-    d.targetUid   = r.uid;
-    d.yaw         = static_cast<float>(r.facing) * 90.f;
-    auto [dx, dz] = game::facingOffset(r.facing);
-    int  x = r.pos.x, z = r.pos.z;
-    if (auto* region = regionFor(r.pos.dim)) {
-        BlockPos front{r.pos.x + dx, r.pos.y, r.pos.z + dz};
-        if (game::replaceable(*region, front) && game::replaceable(*region, BlockPos{front.x, front.y + 1, front.z})) {
-            x = front.x;
-            z = front.z;
-        }
-    }
-    d.x = static_cast<float>(x) + 0.5f;
-    d.y = static_cast<float>(r.pos.y);
-    d.z = static_cast<float>(z) + 0.5f;
-    return d;
-}
-
 /// Source kinds whose menus list memorials (docs/SPEC.md §3.7).
 bool listsMemorials(WarpSourceKind k) {
     switch (k) {
@@ -157,12 +135,12 @@ void tick(Level& level) {
         }
         if (ash && watched) game::particle(r->pos.dim, "bedstones:memorial_ash", Vec3{c.x, c.y + 0.4f, c.z});
     }
-    // Labels whose memorial is gone (e.g. removed while the chunk was unloaded).
-    if (maintain) {
+    // Labels whose memorial is gone (e.g. removed while the chunk was unloaded), every 5 seconds.
+    if ((ticks % 100) == 0) {
         level.forEachPlayer([&](Player& p) {
             auto& region = p.getDimensionBlockSource();
             auto  at     = p.getPosition();
-            AABB  box{Vec3{at.x - 32.f, at.y - 32.f, at.z - 32.f}, Vec3{at.x + 32.f, at.y + 32.f, at.z + 32.f}};
+            AABB  box{Vec3{at.x - 24.f, at.y - 24.f, at.z - 24.f}, Vec3{at.x + 24.f, at.y + 24.f, at.z + 24.f}};
             for (Actor* a : portal::entitiesIn(region, box)) {
                 if (!a || a->getTypeName() != kLabelEntity) continue;
                 auto        lp = a->getPosition();
@@ -328,7 +306,7 @@ BS_REGISTER_TARGET_PROVIDER(bs::service::TargetProvider{
         using namespace bs;
         auto* r = feature::memorial::memorialRecord(id);
         if (!r || r->ownerUid != game::Waystones::playerKey(player)) return std::nullopt;
-        return feature::memorial::landingFor(*r);
+        return feature::portal::landingNear(*r);
     },
     .owns = [](std::string const& id) { return bs::feature::memorial::memorialRecord(id) != nullptr; },
     .onWarped =

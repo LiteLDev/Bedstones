@@ -2,6 +2,7 @@
 // after 6000 ticks, and is offered as "Return to Portal" in selection menus (docs/SPEC.md §1.6).
 
 #include "feature/portal/Portal.h"
+#include "feature/memorial/Memorial.h"
 #include "feature/portal/World.h"
 
 #include <algorithm>
@@ -45,8 +46,6 @@ namespace bs::feature::portal {
 namespace {
 
 using core::WarpSourceKind;
-
-constexpr char const* kLabelEntity = "bedstones:memorial_label";
 
 struct PortalState {
     int ticksLeft = core::portal::kPortalLifetimeTicks;
@@ -105,17 +104,15 @@ core::WaystoneRecord* portalRecord(std::string const& uid) {
     return r && r->type == core::types::kWarpPortal ? r : nullptr;
 }
 
-/// Landing spot next to a record's block, on the side it faces.
-service::Destination frontOf(core::WaystoneRecord const& r) {
-    auto [dx, dz] = game::facingOffset(r.facing);
-    service::Destination d;
-    d.block     = r.pos;
-    d.x         = static_cast<float>(r.pos.x + dx) + 0.5f;
-    d.y         = static_cast<float>(r.pos.y);
-    d.z         = static_cast<float>(r.pos.z + dz) + 0.5f;
-    d.yaw       = static_cast<float>(r.facing) * 90.f;
-    d.targetUid = r.uid;
-    return d;
+/// Waystones' `isValid()` of a portal target: its record (or provider entry) still exists.
+bool targetExists(std::string const& target) {
+    return !target.empty() && (game::Waystones::get().find(target) || service::providerFor(target));
+}
+
+/// Targets non-player entities may be sent to: plain, non-transient waystone-like blocks (not
+/// another player's memorial or portal; those resolve per player).
+bool entityTarget(core::WaystoneRecord const& r) {
+    return !r.transient && r.type != core::types::kFleetingMemorial && r.type != core::types::kWarpPortal;
 }
 
 void showError(Player& player, std::string const& key, std::string const& fallback) {
@@ -135,14 +132,17 @@ void enterPortal(Actor& actor, std::string const& uid) {
     if (!r) return;
     std::string target = r->extra.value(kExtraTarget, std::string{});
     auto        from   = r->pos;
-    if (actor.isPlayer()) {
-        auto& player = static_cast<Player&>(actor);
-        auto& tp     = service::get<service::ITeleport>();
-        if (target.empty() || !tp.resolve(player, target)) {
+    if (!targetExists(target)) {
+        if (actor.isPlayer()) {
+            auto& player = static_cast<Player&>(actor);
             game::chat(player, trFor(player, "chat.waystones.warp_portal_attunement_lost", "This portal has closed because its target was destroyed."));
-            removePortal(uid, true, "target lost");
-            return;
         }
+        removePortal(uid, true, "target lost");
+        return;
+    }
+    if (actor.isPlayer()) {
+        auto&                player = static_cast<Player&>(actor);
+        auto&                tp     = service::get<service::ITeleport>();
         service::WarpRequest req;
         req.source.kind    = WarpSourceKind::WarpPortal;
         req.source.fromUid = uid;
@@ -156,13 +156,10 @@ void enterPortal(Actor& actor, std::string const& uid) {
         log().info("warp portal used: {} -> {} by {}", uid, target, player.getRealName());
         return;
     }
-    // Other entities (mobs, items): only waystone-record targets, no requirements.
+    // Other entities (mobs, items): plain waystone-like targets only (ITeleport takes players).
     auto* dest = game::Waystones::get().find(target);
-    if (!dest) {
-        removePortal(uid, true, "target lost");
-        return;
-    }
-    auto d = frontOf(*dest);
+    if (!dest || !entityTarget(*dest)) return;
+    auto d = landingNear(*dest);
     actor.teleport(Vec3{d.x, d.y, d.z}, DimensionType(d.block.dim), Vec2{0.f, d.yaw});
 }
 
@@ -175,7 +172,7 @@ void tickPortal(BlockSource& region, std::string const& uid) {
         Vec3{static_cast<float>(lower.x + 1), static_cast<float>(lower.y + 2), static_cast<float>(lower.z + 1)}
     };
     for (Actor* actor : entitiesIn(region, box)) {
-        if (!actor || !actor->isAlive() || actor->getTypeName() == kLabelEntity) continue;
+        if (!actor || !actor->isAlive() || actor->getTypeName() == memorial::kLabelEntity) continue;
         if (!actor->getAABB().intersects(box)) continue;
         auto id = actor->getOrCreateUniqueID().rawID;
         if (auto it = gCooldowns.find(id); it != gCooldowns.end() && it->second > gTick) continue;
@@ -189,11 +186,19 @@ void tick() {
     ++gTick;
     auto& ws = game::Waystones::get();
     if (!ws.available()) return;
+    // Portals are tracked in gPortals; records loaded from the world are picked up by a rescan.
+    if ((gTick % 100) == 1) {
+        for (auto* r : ws.ofType(core::types::kWarpPortal)) stateOf(*r);
+    }
+    if (gPortals.empty()) return;
     std::vector<std::string> uids;
-    for (auto* r : ws.ofType(core::types::kWarpPortal)) uids.push_back(r->uid);
+    for (auto const& [uid, st] : gPortals) uids.push_back(uid);
     for (auto const& uid : uids) {
         auto* r = portalRecord(uid);
-        if (!r) continue;
+        if (!r) {
+            gPortals.erase(uid);
+            continue;
+        }
         auto* region = regionFor(r->pos.dim);
         if (!region) continue;
         BlockPos lower = game::blockPos(r->pos);
@@ -212,10 +217,7 @@ void tick() {
         }
         tickPortal(*region, uid);
     }
-    if ((gTick % 200) == 0) {
-        std::erase_if(gCooldowns, [](auto const& e) { return e.second <= gTick; });
-        std::erase_if(gPortals, [](auto const& e) { return !portalRecord(e.first); });
-    }
+    if ((gTick % 200) == 0) std::erase_if(gCooldowns, [](auto const& e) { return e.second <= gTick; });
 }
 
 // ---- interceptor -------------------------------------------------------------------------------
@@ -238,17 +240,15 @@ std::optional<service::WarpResult> interceptPortalScroll(Player& player, service
     }
     auto spot = portalSpotFor(player);
     if (!spot) return noSpace(player);
-    if (!request.skipRequirements) {
-        auto& reqs = service::get<service::IRequirements>();
-        auto  req  = reqs.resolve(player, request.source, *it);
-        if (!reqs.canAfford(player, req)) {
-            return fail("chat.waystones.not_enough_xp", "You do not have enough experience to teleport.");
-        }
-        reqs.consume(player, req);
+    auto& reqs = service::get<service::IRequirements>();
+    auto  req  = reqs.resolve(player, request.source, *it);
+    if (!request.skipRequirements && !reqs.canAfford(player, req)) {
+        return fail("chat.waystones.not_enough_xp", "You do not have enough experience to teleport.");
     }
     int  dim = static_cast<int>(player.getDimensionId());
     auto uid = spawnPortal(dim, *spot, game::opposite(game::playerFacing(player)), request.targetId);
     if (uid.empty()) return noSpace(player);
+    if (!request.skipRequirements) reqs.consume(player, req); // paid once the portal stands
     game::consumeAt(player, loc, 1, true);
     auto c = center(core::GlobalPos{dim, spot->x, spot->y, spot->z});
     game::soundAround(dim, "portal.travel", c, 0.25f, 1.4f);
@@ -395,7 +395,7 @@ BS_REGISTER_TARGET_PROVIDER(bs::service::TargetProvider{
         // Only the player's own return portal is a valid warp target.
         auto const& data = game::Waystones::get().playerData(player);
         if (data.extra.value(feature::portal::kExtraReturnPortal, std::string{}) != id) return std::nullopt;
-        return feature::portal::frontOf(*r);
+        return feature::portal::landingNear(*r);
     },
     .owns     = [](std::string const& id) { return bs::feature::portal::portalRecord(id) != nullptr; },
     .onWarped = {},
