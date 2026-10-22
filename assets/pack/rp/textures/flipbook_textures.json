@@ -1,0 +1,8 @@
+[
+  {
+    "flipbook_texture": "textures/blocks/warp_portal",
+    "atlas_tile": "bedstones_warp_portal",
+    "ticks_per_frame": 3,
+    "blend_frames": true
+  }
+]
