@@ -97,6 +97,7 @@ public:
     }
 
     bool onMouseButton(MouseButton b, bool down, float x, float y) override {
+        if (!mLatch.accept(b, down)) return true;
         if (mAlias.onMouseButton(b == MouseButton::Right, down, x, y)) return true;
         if (!down) return true;
         if (mEdit.click(b, x, y) || mGroup.click(b, x, y) || mManageGroups.click(b, x, y) || mSave.click(b, x, y)) return true;
@@ -153,6 +154,7 @@ private:
     Checkbox           mFavorite;
     HoverTooltip       mTip;
     std::vector<Group> mGroups;
+    icons::ButtonLatch mLatch;
     bool               mCanEdit = false, mLogged = false, mSent = false;
 };
 

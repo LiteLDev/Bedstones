@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "client/ui/UiLayer.h"
 #include "client/ui/gfx/Painter.h"
 #include "client/ui/widgets/Style.h"
 
@@ -137,6 +138,19 @@ inline void groupTag(Painter& p, Rect const& r, std::uint32_t rgb) {
     p.fillRect({x, y + 2, 1, 4}, c, Painter::Layer::Foreground);
     p.fillRect({x + 3, y + 3, 2, 2}, Color::rgb(0x202020), Painter::Layer::Foreground);
 }
+
+/// Drops repeated presses / releases of a mouse button (some input paths deliver a press twice,
+/// which would read as a double-click on the drag handle).
+struct ButtonLatch {
+    bool held[3]{};
+    /// False when the event repeats the button's current state.
+    bool accept(ui::MouseButton b, bool down) {
+        auto& h = held[static_cast<int>(b)];
+        if (h == down) return false;
+        h = down;
+        return true;
+    }
+};
 
 /// Splits `text` into lines no wider than `maxWidth` (tooltips; Java wraps at 170 px).
 inline std::vector<std::string> wrap(Painter& p, std::string const& text, float maxWidth = 170) {

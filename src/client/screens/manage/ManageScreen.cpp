@@ -131,6 +131,7 @@ public:
     }
 
     bool onMouseButton(MouseButton b, bool down, float x, float y) override {
+        if (!mLatch.accept(b, down)) return true;
         if (!down) {
             if (b == MouseButton::Left && !mDragId.empty()) mDragId.clear();
             mList.click(b, false, x, y);
@@ -261,6 +262,7 @@ private:
             mLastClickAt = mNow;
             if (twice) {
                 mLastClickId.clear();
+                mDragId.clear(); // the first click of the pair started a drag
                 moveToEnd(row.id, !shift());
                 return true;
             }
@@ -289,7 +291,7 @@ private:
     }
 
     /// Double-click: to the top; shift-double-click: to the bottom.
-    void moveToEnd(std::string const& id, bool top) {
+    void moveToEnd(std::string id, bool top) { // by value: callers pass a reference into mRows
         auto it = std::find_if(mRows.begin(), mRows.end(), [&](Row const& r) { return r.id == id; });
         if (it == mRows.end()) return;
         Row row = *it;
@@ -338,6 +340,7 @@ private:
     std::string           mLastClickId, mDragId;
     bool                  mShift = false, mLogged = false;
     int                   mPending = 0; ///< list actions not answered yet
+    icons::ButtonLatch    mLatch;
 };
 
 } // namespace

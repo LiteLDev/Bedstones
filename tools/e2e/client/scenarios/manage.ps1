@@ -27,52 +27,63 @@ function HandleAt([int]$i) { @((GuiX ($listX + 8)), (GuiY ((RowY $i) + 11))) }
 function EditAt([int]$i) { @((GuiX ($listX + 190 + 6)), (GuiY ((RowY $i) + 4 + 6))) }
 function ActionAt([int]$i) { @((GuiX ($listX + 205 + 6)), (GuiY ((RowY $i) + 4 + 6))) }
 
+# Runs $Do until the log shows $Pattern (headless input occasionally drops a press).
+function Invoke-Step([scriptblock]$Do, [string]$Pattern, [int]$Attempts = 3) {
+    for ($i = 1; $i -le $Attempts; $i++) {
+        $m = Get-LogMark
+        & $Do
+        try { return Wait-LogLine $Pattern 5 -Since $m } catch { Write-Host "[manage] step not seen (attempt $i): $Pattern" }
+    }
+    throw "step failed after $Attempts attempts: $Pattern"
+}
+
 Start-Sleep -Milliseconds 500
 Save-Screenshot 'manage' | Out-Null
 
 # Drag "Alpha Peak" (row 0) by its handle down to row 1: one swap step.
-$mark = Get-LogMark
-$h = HandleAt 0
-Move-Mouse $h[0] $h[1] -Relative
-[BsE2E.Native]::MouseButton(0, $false); Start-Sleep -Milliseconds 150
-foreach ($dy in 4, 8, 12, 16, 20, 24) {
-    Move-Mouse $h[0] (GuiY ((RowY 0) + 11 + $dy)) -Relative
-}
-Start-Sleep -Milliseconds 200
-[BsE2E.Native]::MouseButton(0, $true); Start-Sleep -Milliseconds 300
-Wait-LogLine "manage: swapped 'Alpha Peak' <-> 'Birch Hollow' by" 10 -Since $mark | Out-Null
+Invoke-Step {
+    $h = HandleAt 0
+    Move-Mouse $h[0] $h[1] -Relative
+    Start-Sleep -Milliseconds 200
+    [BsE2E.Native]::MouseButton(0, $false); Start-Sleep -Milliseconds 150
+    foreach ($dy in 4, 8, 12, 16, 20, 24) { Move-Mouse $h[0] (GuiY ((RowY 0) + 11 + $dy)) -Relative }
+    Start-Sleep -Milliseconds 200
+    [BsE2E.Native]::MouseButton(0, $true); Start-Sleep -Milliseconds 300
+} "manage: swapped 'Alpha Peak' <-> 'Birch Hollow' by" | Out-Null
 Start-Sleep -Milliseconds 500
 Save-Screenshot 'dragged' | Out-Null
 
 # Double-click the handle of "Cedar Ford" (row 2): move to the top.
-$mark = Get-LogMark
-$h = HandleAt 2
-Move-Mouse $h[0] $h[1] -Relative
-foreach ($n in 1, 2) { [BsE2E.Native]::MouseButton(0, $false); Start-Sleep -Milliseconds 40; [BsE2E.Native]::MouseButton(0, $true); Start-Sleep -Milliseconds 60 }
-Wait-LogLine "manage: moved 'Cedar Ford' to the top by" 10 -Since $mark | Out-Null
+Invoke-Step {
+    $h = HandleAt 2
+    Move-Mouse $h[0] $h[1] -Relative
+    Start-Sleep -Milliseconds 200
+    foreach ($n in 1, 2) { [BsE2E.Native]::MouseButton(0, $false); Start-Sleep -Milliseconds 40; [BsE2E.Native]::MouseButton(0, $true); Start-Sleep -Milliseconds 60 }
+    Start-Sleep -Milliseconds 300
+} "manage: moved 'Cedar Ford' to the top by" | Out-Null
 Start-Sleep -Milliseconds 500
 Save-Screenshot 'moved_top' | Out-Null
 # Order now: Cedar Ford, Birch Hollow, Alpha Peak, Dune Gate.
 
 # Shift + click the delete X of "Dune Gate" (row 3).
-$mark = Get-LogMark
 $a = ActionAt 3
 Move-Mouse $a[0] $a[1] -Relative
 [BsE2E.Native]::Key(0x10, $false); Start-Sleep -Milliseconds 300
 Move-Mouse $a[0] $a[1] -Relative
 Save-Screenshot 'delete_hover' | Out-Null
-[BsE2E.Native]::MouseButton(0, $false); Start-Sleep -Milliseconds 60; [BsE2E.Native]::MouseButton(0, $true)
-Start-Sleep -Milliseconds 200
+Invoke-Step {
+    Move-Mouse $a[0] $a[1] -Relative
+    [BsE2E.Native]::MouseButton(0, $false); Start-Sleep -Milliseconds 60; [BsE2E.Native]::MouseButton(0, $true)
+    Start-Sleep -Milliseconds 200
+} "manage: deleted 'Dune Gate' \(forget\) by" | Out-Null
 [BsE2E.Native]::Key(0x10, $true)
-Wait-LogLine "manage: deleted 'Dune Gate' \(forget\) by" 10 -Since $mark | Out-Null
 Start-Sleep -Milliseconds 500
 Save-Screenshot 'deleted' | Out-Null
 
 # Personal settings of "Alpha Peak" (row 2) through its pencil icon.
 $mark = Get-LogMark
 $e = EditAt 2
-Click $e[0] $e[1] -Relative
-Wait-LogLine "personal settings: opened 'Alpha Peak' for" 10 -Since $mark | Out-Null
+Invoke-Step { Click $e[0] $e[1] -Relative } "personal settings: opened 'Alpha Peak' for" | Out-Null
 Wait-LogLine 'companion: screen personal_settings shown' 10 -Since $mark | Out-Null
 $ps = Wait-LogLine 'personal settings screen: layout gui=' 10 -Since $mark
 if ($ps -notmatch 'left=([\d.-]+) top=([\d.-]+)') { throw "unexpected layout line: $ps" }
@@ -87,8 +98,7 @@ Start-Sleep -Milliseconds 300
 Save-Screenshot 'personal_filled' | Out-Null
 
 $mark = Get-LogMark
-Click (GuiX ($pl + 88)) (GuiY ($pt + 152)) -Relative
-Wait-LogLine "personal settings: saved 'Alpha Peak' by .* \(alias 'Summit', group '', favorite true\)" 10 -Since $mark | Out-Null
+Invoke-Step { Click (GuiX ($pl + 88)) (GuiY ($pt + 152)) -Relative } "personal settings: saved 'Alpha Peak' by .* \(alias 'Summit', group '', favorite true\)" | Out-Null
 Wait-LogLine 'companion: screen manage shown' 10 -Since $mark | Out-Null
 Start-Sleep -Milliseconds 600
 Save-Screenshot 'manage_after' | Out-Null
