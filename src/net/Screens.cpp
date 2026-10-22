@@ -75,12 +75,13 @@ FallbackHandler const* fallbackFor(std::string const& id) {
     return nullptr;
 }
 
-void dispatch(Player& player, ScreenSession& session, std::string const& action, nlohmann::json const& args) {
+/// `closed`: the session was already removed (the "close" action); handlers get `session` itself.
+void dispatch(Player& player, ScreenSession& session, std::string const& action, nlohmann::json const& args, bool closed = false) {
     // Copy: a handler may open another screen (replacing `session`).
     auto id = session.id;
     for (auto const& h : ScreenHandlerRegistry::entries()) {
         if (h.id != id || !h.actions) continue;
-        auto* live = current(player, id, session.session);
+        auto* live = closed ? &session : current(player, id, session.session);
         if (!live) return;
         try {
             h.actions(player, *live, action, args);
@@ -157,7 +158,7 @@ void simulateAction(Player& player, std::string const& action, nlohmann::json co
     if (action == "close") {
         auto copy = *s;
         gOpen.erase(keyOf(player));
-        dispatch(player, copy, action, args); // handlers see the closed session
+        dispatch(player, copy, action, args, true); // handlers see the closed session
         return;
     }
     dispatch(player, *s, action, args);

@@ -183,3 +183,23 @@ BS_REGISTER_SELFTEST("foundation.warp_events", [](Context& ctx) {
     ctx.check(bs::service::get<bs::service::ITeleport>().warp(p, req).ok, "warp ok");
     ctx.check(gWarpedEvents == before + 1, "warp listeners run after a successful warp");
 });
+
+namespace {
+int gCloseSeen = 0;
+}
+BS_REGISTER_SCREEN_ACTIONS("foundation_close_probe", [](Player&, bs::net::screens::ScreenSession&, std::string const& action, nlohmann::json const&) {
+    if (action == "close") ++gCloseSeen;
+});
+
+BS_REGISTER_SELFTEST("foundation.screen_close", [](Context& ctx) {
+    auto& p = ctx.player();
+    bs::net::setTestSink([](Player&, std::string_view, nlohmann::json const&) {});
+    bs::net::setCompanion(p, bs::net::CompanionInfo{"test", {"native_screen"}});
+    int before = gCloseSeen;
+    bs::net::screens::open(p, "foundation_close_probe", {});
+    bs::net::screens::simulateAction(p, "close");
+    ctx.check(gCloseSeen == before + 1, "the close action reaches the screen's handlers");
+    ctx.check(bs::net::screens::current(p) == nullptr, "the session is gone after close");
+    bs::net::setTestSink(nullptr);
+    bs::net::setCompanion(p, std::nullopt);
+});
