@@ -1,0 +1,11 @@
+{
+    "bs.worldgen.locate": "Nearest wild waystone: {} ~ {} ({} blocks away, chunk {}, {}): {}",
+    "bs.worldgen.locate.disabled": "Wild waystones are disabled (chunksBetweenWildWaystones = 0).",
+    "bs.worldgen.locate.status.disabled": "disabled in this dimension",
+    "bs.worldgen.locate.status.placed": "placed at y {}",
+    "bs.worldgen.locate.status.skipped": "generated without a waystone (no space)",
+    "bs.worldgen.locate.status.pending": "not generated yet",
+    "bs.worldgen.testblock.off": "World generation uses the waystone blocks only.",
+    "bs.worldgen.testblock.unknown": "Unknown block: {}",
+    "bs.worldgen.testblock.set": "Missing waystone blocks are generated as {} (debug)."
+}
