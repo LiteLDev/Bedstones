@@ -1,0 +1,5 @@
+{
+  "waystones.configuration.general.nameGenerationMode": "名称生成模式",
+  "waystones.configuration.general.nameGenerationTemplate": "名称生成模板",
+  "waystones.configuration.general.nameGenerationPresets": "名称预设"
+}

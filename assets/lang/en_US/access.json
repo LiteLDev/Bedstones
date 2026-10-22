@@ -1,0 +1,8 @@
+{
+  "chat.waystones.only_owner_can_edit": "Only the owner may edit this waystone.",
+  "chat.waystones.only_creative_can_edit": "Only creative users may edit this waystone.",
+  "chat.waystones.only_creative_can_edit_global": "Only creative users may edit this waystone.",
+  "waystones.configuration.general.restrictedWaystones": "Restricted waystones",
+  "waystones.configuration.general.defaultVisibility": "Default visibility",
+  "waystones.configuration.general.allowEveryoneToManageGlobalWaystones": "Allow everyone to manage global waystones"
+}
