@@ -202,7 +202,9 @@ bool        isPlateBlock(std::string_view blockId) { return blockId == plateBloc
 
 std::string galacticName(std::string const& uid) {
     auto ident = logic::galacticIdentifier(uid);
-    return std::string("§") + logic::formattingCode(logic::chatFormattingId(logic::colorIndex(ident))) + ident;
+    // Waystones draws the identifier in the Standard Galactic ("alt") font: the resource pack's
+    // glyph page E1 holds it.
+    return std::string("§") + logic::formattingCode(logic::chatFormattingId(logic::colorIndex(ident))) + logic::galacticText(ident);
 }
 
 std::vector<std::string> shardLore(Player const* player, std::string_view itemId, std::string const& target) {

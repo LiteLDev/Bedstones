@@ -125,7 +125,7 @@ ll::coro::CoroTask<> arrive(Context& ctx, int dx, int span = 20) {
 BS_REGISTER_SELFTEST("warpplate.galactic", [](Context& ctx) {
     auto uid  = std::string("3f2a1b4c-9d8e-4f7a-b6c5-d4e3f2a1b0c9");
     auto name = feature::warpplate::galacticName(uid);
-    ctx.check(name.ends_with("fabcdefa"), "galactic identifier: " + name);
+    ctx.check(name.ends_with(core::warpplate::galacticText("fabcdefa")), "galactic identifier in the galactic glyphs");
     ctx.check(name.starts_with("§"), "galactic name is coloured");
 });
 

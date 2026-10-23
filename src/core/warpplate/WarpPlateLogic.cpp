@@ -23,6 +23,22 @@ std::string galacticIdentifier(std::string_view uid) {
     return out;
 }
 
+std::string galacticText(std::string_view text) {
+    std::string out;
+    for (char ch : text) {
+        char c = (ch >= 'A' && ch <= 'Z') ? static_cast<char>(ch - 'A' + 'a') : ch;
+        if (c < 'a' || c > 'z') {
+            out.push_back(ch);
+            continue;
+        }
+        unsigned cp = 0xE100u + static_cast<unsigned char>(c);
+        out.push_back(static_cast<char>(0xE0 | (cp >> 12)));
+        out.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
+        out.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+    }
+    return out;
+}
+
 int colorIndex(std::string_view identifier) {
     std::int32_t h = javaHash(identifier);
     if (h == std::numeric_limits<std::int32_t>::min()) return 7; // Java: Math.abs(MIN) % 15 < 0 -> null -> GRAY

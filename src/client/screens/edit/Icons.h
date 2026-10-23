@@ -134,22 +134,4 @@ inline PixelArt const kModifiers{
     {"X=113A3A", "a=4FE0D8", "l=D8FFFC", "d=239C96"},
 };
 
-/// Glyphs for the six letters of a hex uid (a-f), Standard-Galactic-like (3x5).
-inline PixelArt const& galacticGlyph(char c) {
-    static PixelArt const kA{{"..X", "..X", "XXX", "X..", "XXX"}, {"X=FFFFFF"}};
-    static PixelArt const kB{{".X.", ".X.", ".X.", "X.X", ".X."}, {"X=FFFFFF"}};
-    static PixelArt const kC{{"XXX", "X..", "X.X", "X..", "XXX"}, {"X=FFFFFF"}};
-    static PixelArt const kD{{"XXX", "X..", "X.X", ".XX", "XXX"}, {"X=FFFFFF"}};
-    static PixelArt const kE{{"X.X", "X.X", "XXX", ".X.", ".X."}, {"X=FFFFFF"}};
-    static PixelArt const kF{{"XXX", "...", "X.X", "...", "XXX"}, {"X=FFFFFF"}};
-    switch (c) {
-    case 'a': return kA;
-    case 'b': return kB;
-    case 'c': return kC;
-    case 'd': return kD;
-    case 'e': return kE;
-    default: return kF;
-    }
-}
-
 } // namespace bs::client::screens::edit::icons

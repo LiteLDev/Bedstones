@@ -34,3 +34,13 @@ pwsh tools/build.ps1 -Target all -Tests
 Needs xmake, Visual Studio 2022+ build tools and LLVM (clang-cl) on PATH. See [AGENTS.md](AGENTS.md)
 for the layout, the contracts between feature units, and the end-to-end test harnesses
 (`tools/e2e/`, driven headlessly with LeviHeadlessInput).
+
+## Differences from the Java mod
+
+Bedrock has no equivalent for a few Java features, so Bedstones does the following instead:
+
+- **Teams.** Bedrock has no scoreboard teams. A player's team is set by a `team:<name>` tag, for
+  example `/tag @s add team:builders`. "Visible to Team" waystones and the Teams group use that tag.
+- **Map mods and statistics.** JourneyMap, Dynmap, BlueMap and Jade/WTHIT have no Bedrock
+  versions, and Bedrock has no custom statistics, so those integrations and the
+  `waystones:waystone_activated` statistic are not provided.

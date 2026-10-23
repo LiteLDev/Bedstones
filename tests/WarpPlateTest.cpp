@@ -1,3 +1,4 @@
+#include <string>
 #include <gtest/gtest.h>
 
 #include "core/warpplate/WarpPlateLogic.h"
@@ -80,4 +81,12 @@ TEST(WarpPlate, ChooseTarget) {
         {0, false, "x"}
     };
     EXPECT_EQ(chooseTarget(d, false, true, last, first)->target, "x");
+}
+
+TEST(WarpPlateLogic, GalacticTextUsesGlyphPageE1) {
+    using bs::core::warpplate::galacticText;
+    EXPECT_EQ(galacticText("a"), "\xEE\x85\xA1"); // U+E161
+    EXPECT_EQ(galacticText("z"), "\xEE\x85\xBA"); // U+E17A
+    EXPECT_EQ(galacticText("A1-"), std::string("\xEE\x85\xA1") + "1-");
+    EXPECT_EQ(galacticText(""), "");
 }

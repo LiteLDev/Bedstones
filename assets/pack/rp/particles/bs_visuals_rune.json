@@ -4,7 +4,7 @@
         "description": {
             "identifier": "bedstones:visuals_rune",
             "basic_render_parameters": {
-                "material": "particles_alpha",
+                "material": "particles_add",
                 "texture": "textures/bs_visuals/runes"
             }
         },
@@ -21,7 +21,7 @@
                 "direction": { "mode": "custom", "custom_direction": ["v.bs_nx", 0, "v.bs_nz"] },
                 "uv": { "texture_width": 24, "texture_height": 16, "uv": ["v.bs_u", 0], "uv_size": [8, 16] }
             },
-            "minecraft:particle_appearance_tinting": { "color": ["v.bs_r", "v.bs_g", "v.bs_b", 1.0] }
+            "minecraft:particle_appearance_tinting": { "color": ["v.bs_r * (1 - math.abs(v.particle_age / (v.particle_lifetime * 0.5) - 1))", "v.bs_g * (1 - math.abs(v.particle_age / (v.particle_lifetime * 0.5) - 1))", "v.bs_b * (1 - math.abs(v.particle_age / (v.particle_lifetime * 0.5) - 1))", "1 - math.abs(v.particle_age / (v.particle_lifetime * 0.5) - 1)"] }
         }
     }
 }

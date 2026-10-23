@@ -110,10 +110,15 @@ void spawnChargeParticles(Player& p, Charge const& c) {
     auto                                      u = [&] { return dist(r); };
     int                                       dim  = dimOf(p);
     Vec3                                      feet = p.getFeetPos();
+    // Around the body, in a ring 0.6-0.9 blocks out and below the eyes: a particle right at the
+    // camera fills the whole first-person view (Java's are client-side and tiny there).
     auto around = [&](std::string const& name, int count, float yOffset) {
         count = (count + kParticleDivisor - 1) / kParticleDivisor;
         for (int i = 0; i < count; ++i) {
-            game::particle(dim, name, Vec3{feet.x + (u() - 0.5f) * 1.5f, feet.y + yOffset + u(), feet.z + (u() - 0.5f) * 1.5f});
+            float angle = u() * 2.f * std::numbers::pi_v<float>;
+            float dist  = 0.6f + 0.3f * u();
+            float y     = std::min(yOffset + u(), 1.2f);
+            game::particle(dim, name, Vec3{feet.x + std::cos(angle) * dist, feet.y + y, feet.z + std::sin(angle) * dist});
         }
     };
     if (c.item == ScrollItem::WarpStone) {
@@ -125,14 +130,16 @@ void spawnChargeParticles(Player& p, Charge const& c) {
         int   handCount = std::min(4, counts.reversePortal);
         for (int i = 0; i < handCount; ++i) {
             game::particle(dim, "minecraft:portal_reverse_particle",
-                Vec3{feet.x + hx + (u() - 0.5f) * 0.5f, feet.y + 1.f + u(), feet.z + hz + (u() - 0.5f) * 0.5f});
+                Vec3{feet.x + hx + (u() - 0.5f) * 0.5f, feet.y + 0.8f + 0.4f * u(), feet.z + hz + (u() - 0.5f) * 0.5f});
         }
         around("minecraft:portal_reverse_particle", counts.reversePortal - handCount, 0.f);
     } else {
         around("minecraft:portal_reverse_particle", counts.reversePortal, 0.f);
     }
     around("minecraft:crimson_spore_particle", counts.crimsonSpore, 0.f);
-    around("minecraft:witchspell_emitter", counts.witch, 0.5f);
+    // Java's WITCH sparks: Bedrock's witchspell emitter spawns large rising puffs that cover the
+    // first-person view, the small portal sparks look closer.
+    around("minecraft:portal_directional", counts.witch, 0.5f);
     around(c.item == ScrollItem::WarpStone ? "minecraft:portal_reverse_particle" : "minecraft:portal_directional", counts.portal, 1.f);
 }
 
