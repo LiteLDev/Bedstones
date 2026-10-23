@@ -156,6 +156,7 @@ BS_REGISTER_SELFTEST("memorial.broken", [](Context& ctx) -> ll::coro::CoroTask<>
 // `/waystones debug memorials`: logs the caller's memorials and opens a warp-scroll selection menu.
 BS_REGISTER_SUBCOMMAND([](ll::command::CommandHandle& cmd) {
     cmd.overload().text("debug").text("memorials").execute([](CommandOrigin const& origin, CommandOutput& output) {
+        if (!bs::commands::isAdmin(origin)) return output.error("You need operator permission.");
         auto* player = bs::commands::playerOf(origin);
         if (!player) return output.error("Only players can open the selection menu.");
         bs::core::WarpSource src;
