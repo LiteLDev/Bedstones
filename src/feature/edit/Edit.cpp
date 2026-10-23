@@ -265,6 +265,7 @@ BS_REGISTER_SCREEN_FALLBACK("edit", bs::feature::edit::showFallback);
 
 BS_REGISTER_SUBCOMMAND([](ll::command::CommandHandle& cmd) {
     cmd.overload().text("debug").text("edit").execute([](CommandOrigin const& origin, CommandOutput& output) {
+        if (!bs::commands::isAdmin(origin)) return output.error("You need operator permission.");
         auto* player = bs::commands::playerOf(origin);
         if (!player) return output.error("Only players can open screens.");
         auto& region = player->getDimensionBlockSource();

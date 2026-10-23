@@ -27,6 +27,7 @@ constexpr char const* kScreen = "foundation_test";
 
 BS_REGISTER_SUBCOMMAND([](ll::command::CommandHandle& cmd) {
     cmd.overload().text("debug").text("screen").execute([](CommandOrigin const& origin, CommandOutput& output) {
+        if (!commands::isAdmin(origin)) return output.error("You need operator permission.");
         auto* player = commands::playerOf(origin);
         if (!player) return output.error("Only players can open screens.");
         auto session = net::screens::open(*player, kScreen, {{"title", "Bedstones test screen"}, {"button", "Done"}});
