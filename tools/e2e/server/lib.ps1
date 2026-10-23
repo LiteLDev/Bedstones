@@ -225,6 +225,7 @@ function Initialize-ServerSlot([string]$ModDir) {
     $dest = Join-Path $slot "$mods\$script:ModName"
     if (-not (Test-Path (Join-Path $ModDir "$script:ModName.dll"))) { throw "Build output not found: $ModDir (run 'pwsh tools/build.ps1 -Target server' or pass -Build)" }
     Copy-Item -Recurse -Force $ModDir $dest
+    Set-TestModConfig $dest
     Write-Step "deployed $ModDir -> $dest"
 }
 

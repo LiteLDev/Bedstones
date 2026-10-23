@@ -1,0 +1,8 @@
+{
+  "container.waystones.warp_modifiers": "Warp Modifiers",
+  "bs.modifiers.inventory": "Inventory",
+  "bs.modifiers.form.hint": "Select a slot to put the held item into it, or to take its item.",
+  "bs.modifiers.form.shard_slot": "Shard",
+  "bs.modifiers.form.modifier_slot": "Modifier {}",
+  "bs.modifiers.form.done": "Done"
+}

@@ -1,0 +1,47 @@
+{
+  "bedstones:orange_sharestone": {
+    "sound": "stone"
+  },
+  "bedstones:magenta_sharestone": {
+    "sound": "stone"
+  },
+  "bedstones:light_blue_sharestone": {
+    "sound": "stone"
+  },
+  "bedstones:yellow_sharestone": {
+    "sound": "stone"
+  },
+  "bedstones:lime_sharestone": {
+    "sound": "stone"
+  },
+  "bedstones:pink_sharestone": {
+    "sound": "stone"
+  },
+  "bedstones:gray_sharestone": {
+    "sound": "stone"
+  },
+  "bedstones:light_gray_sharestone": {
+    "sound": "stone"
+  },
+  "bedstones:cyan_sharestone": {
+    "sound": "stone"
+  },
+  "bedstones:purple_sharestone": {
+    "sound": "stone"
+  },
+  "bedstones:blue_sharestone": {
+    "sound": "stone"
+  },
+  "bedstones:brown_sharestone": {
+    "sound": "stone"
+  },
+  "bedstones:green_sharestone": {
+    "sound": "stone"
+  },
+  "bedstones:red_sharestone": {
+    "sound": "stone"
+  },
+  "bedstones:black_sharestone": {
+    "sound": "stone"
+  }
+}

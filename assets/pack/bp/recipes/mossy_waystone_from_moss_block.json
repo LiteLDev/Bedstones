@@ -1,0 +1,28 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "bedstones:mossy_waystone_from_moss_block"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "bedstones:waystone"
+      },
+      {
+        "count": 3,
+        "item": "minecraft:moss_block"
+      }
+    ],
+    "unlock": [
+      {
+        "item": "bedstones:waystone"
+      }
+    ],
+    "result": {
+      "item": "bedstones:mossy_waystone"
+    }
+  }
+}

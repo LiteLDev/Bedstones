@@ -1,0 +1,21 @@
+{
+  "gui.waystones.waystone_selection.title": "选择你的目的地",
+  "gui.waystones.waystone_selection.admin_title": "选择要前往的 {} 的传送石：",
+  "gui.waystones.waystone_selection.current_location": "当前位置：",
+  "gui.waystones.waystone_selection.no_waystones_activated": "你还没有激活任何传送石。",
+  "gui.waystones.waystone_selection.no_sharestones": "没有可以传送到的匹配共享石。",
+  "gui.waystones.waystone_selection.sort": "排序：{}",
+  "gui.waystones.waystone_selection.sort.manual": "手动",
+  "gui.waystones.waystone_selection.sort.name": "按名称",
+  "gui.waystones.waystone_selection.sort.distance": "按距离",
+  "gui.waystones.waystone_selection.manage_waystones": "管理传送石",
+  "bs.selection.unnamed": "<未命名>",
+  "bs.selection.edit_current": "编辑传送石",
+  "bs.selection.tooltip.xp_cost": "经验消耗：{}",
+  "bs.selection.tooltip.level_cost": "等级消耗：{}",
+  "bs.selection.tooltip.cooldown": "冷却：{} 秒",
+  "bs.selection.tooltip.item_cost": "物品消耗：{} {}",
+  "bs.selection.form.levels": "{} 级",
+  "bs.selection.form.current": "当前",
+  "bs.selection.form.edit_current": "编辑当前传送石"
+}

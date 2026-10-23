@@ -1,0 +1,16 @@
+{
+  "format_version": "1.21.40",
+  "minecraft:item": {
+    "description": {
+      "identifier": "bedstones:warp_scroll",
+      "menu_category": { "category": "items" }
+    },
+    "components": {
+      "minecraft:icon": "bedstones_warp_scroll",
+      "minecraft:display_name": { "value": "item.bedstones:warp_scroll.name" },
+      "minecraft:max_stack_size": 64,
+      "minecraft:use_modifiers": { "use_duration": 3600, "movement_modifier": 0.35 },
+      "minecraft:use_animation": "bow"
+    }
+  }
+}

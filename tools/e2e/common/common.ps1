@@ -255,3 +255,22 @@ function Invoke-SelfTest([string]$Glob = '', [int]$TimeoutSeconds = 600, [switch
 
 # Lines of this run that make it fail (ERR/FTL from the mod, LeviLamina or CrashLogger).
 function Get-ErrorLines { @(Get-ServerLog | Where-Object { $_ -match $script:ErrorLineRegex }) }
+
+# Wild / village waystone generation would scatter real waystones over the test worlds (and into
+# the counts and lists the scenarios check): the deployed mod gets world generation turned off,
+# except for the worldgen scenario and the server's `full` run of every selftest (`$Scenario` of run.ps1).
+function Set-TestModConfig([string]$ModDest) {
+    $name = Get-Variable -Name Scenario -ValueOnly -ErrorAction SilentlyContinue
+    if ($name -in 'worldgen', 'full') { return }
+    $dir = Join-Path $ModDest 'config'
+    New-Item -ItemType Directory -Force -Path $dir | Out-Null
+    $cfg = [ordered]@{
+        version                         = 1
+        wildWaystoneStyle               = 'BIOME'
+        chunksBetweenWildWaystones      = 0
+        wildWaystonesDimensionAllowList = @('minecraft:overworld', 'minecraft:the_nether', 'minecraft:the_end')
+        wildWaystonesDimensionDenyList  = @()
+        spawnInVillages                 = 'DISABLED'
+    }
+    Set-Content -Path (Join-Path $dir 'worldGen.json') -Value ($cfg | ConvertTo-Json) -Encoding UTF8
+}

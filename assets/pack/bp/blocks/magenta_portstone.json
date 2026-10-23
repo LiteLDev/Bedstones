@@ -1,0 +1,160 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "bedstones:magenta_portstone",
+      "menu_category": {
+        "category": "construction"
+      },
+      "states": {
+        "bedstones:facing": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "bedstones:upper": [
+          0,
+          1
+        ]
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.bedstones:magenta_portstone.name",
+      "minecraft:geometry": "geometry.bedstones.portstone_lower",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "bs_magenta_portstone",
+          "render_method": "alpha_test"
+        }
+      },
+      "minecraft:item_visual": {
+        "geometry": "geometry.bedstones.portstone_item",
+        "material_instances": {
+          "*": {
+            "texture": "bs_magenta_portstone",
+            "render_method": "alpha_test"
+          }
+        }
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -7.0,
+          0.0,
+          -7.0
+        ],
+        "size": [
+          14.0,
+          16.0,
+          14.0
+        ]
+      },
+      "minecraft:selection_box": {
+        "origin": [
+          -7.0,
+          0.0,
+          -7.0
+        ],
+        "size": [
+          14.0,
+          16.0,
+          14.0
+        ]
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 5
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 2000
+      },
+      "minecraft:movable": {
+        "movement_type": "immovable"
+      },
+      "minecraft:loot": "loot_tables/blocks/bedstones_stones_none.json",
+      "minecraft:light_dampening": 0,
+      "minecraft:map_color": "#7d7e83",
+      "tag:stone": {},
+      "tag:minecraft:is_pickaxe_item_destructible": {}
+    },
+    "permutations": [
+      {
+        "condition": "q.block_state('bedstones:facing') == 0",
+        "components": {
+          "minecraft:transformation": {
+            "rotation": [
+              0,
+              180,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:facing') == 1",
+        "components": {
+          "minecraft:transformation": {
+            "rotation": [
+              0,
+              90,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:facing') == 2",
+        "components": {
+          "minecraft:transformation": {
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:facing') == 3",
+        "components": {
+          "minecraft:transformation": {
+            "rotation": [
+              0,
+              270,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:upper') == 1",
+        "components": {
+          "minecraft:geometry": "geometry.bedstones.portstone_upper",
+          "minecraft:collision_box": {
+            "origin": [
+              -7.0,
+              0.0,
+              -7.0
+            ],
+            "size": [
+              14.0,
+              13.0,
+              14.0
+            ]
+          },
+          "minecraft:selection_box": {
+            "origin": [
+              -7.0,
+              0.0,
+              -7.0
+            ],
+            "size": [
+              14.0,
+              13.0,
+              14.0
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "bedstones:warp_plate"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "SWS",
+      "WFW",
+      "SWS"
+    ],
+    "key": {
+      "S": {
+        "item": "minecraft:stone_bricks"
+      },
+      "W": {
+        "item": "bedstones:warp_dust"
+      },
+      "F": {
+        "item": "bedstones:dormant_shard"
+      }
+    },
+    "unlock": [
+      {
+        "item": "bedstones:dormant_shard"
+      }
+    ],
+    "result": {
+      "item": "bedstones:warp_plate",
+      "count": 1
+    }
+  }
+}

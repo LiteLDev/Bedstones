@@ -1,0 +1,5 @@
+{
+  "waystones.configuration.general.nameGenerationMode": "Name generation mode",
+  "waystones.configuration.general.nameGenerationTemplate": "Name generation template",
+  "waystones.configuration.general.nameGenerationPresets": "Name generation presets"
+}

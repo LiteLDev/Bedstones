@@ -1,5 +1,6 @@
 #include "game/BlockContainer.h"
 
+#include "mc/deps/nbt/CompoundTag.h"
 #include "mc/world/item/ItemStack.h"
 
 #include "game/Ids.h"
@@ -29,13 +30,16 @@ std::optional<SlotItem> slotFromJson(nlohmann::json const& j) {
             if (v.is_string()) s.user[k] = v.get<std::string>();
         }
     }
+    s.nbt = j.value("nbt", std::string{});
     if (s.id.empty() || s.count <= 0) return std::nullopt;
     return s;
 }
 
 nlohmann::json slotToJson(std::optional<SlotItem> const& s) {
     if (!s) return nullptr;
-    return {{"id", s->id}, {"count", s->count}, {"aux", s->aux}, {"user", s->user}};
+    nlohmann::json j{{"id", s->id}, {"count", s->count}, {"aux", s->aux}, {"user", s->user}};
+    if (!s->nbt.empty()) j["nbt"] = s->nbt;
+    return j;
 }
 } // namespace
 
@@ -62,11 +66,18 @@ std::optional<SlotItem> toSlotItem(ItemStack const& stack) {
     for (auto key : kUserKeys) {
         if (auto v = userString(stack, key)) s.user[std::string(key)] = *v;
     }
+    if (stack.mUserData && !stack.mUserData->empty()) s.nbt = stack.mUserData->toSnbt(SnbtFormat::Minimize, 0);
     return s;
 }
 
 ItemStack toStack(SlotItem const& item) {
     auto stack = makeItem(item.id, item.count, item.aux);
+    if (!item.nbt.empty() && !stack.isNull()) {
+        if (auto tag = CompoundTag::fromSnbt(item.nbt)) {
+            stack.setUserData(std::make_unique<CompoundTag>(std::move(*tag)));
+            return stack;
+        }
+    }
     for (auto const& [k, v] : item.user) setUserString(stack, k, v);
     return stack;
 }

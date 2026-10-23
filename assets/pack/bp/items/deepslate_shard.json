@@ -1,0 +1,23 @@
+{
+  "format_version": "1.21.40",
+  "minecraft:item": {
+    "description": {
+      "identifier": "bedstones:deepslate_shard",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": "bedstones_deepslate_shard",
+      "minecraft:max_stack_size": 64,
+      "minecraft:display_name": {
+        "value": "item.bedstones:deepslate_shard"
+      },
+      "minecraft:tags": {
+        "tags": [
+          "bedstones:warp_shards"
+        ]
+      }
+    }
+  }
+}

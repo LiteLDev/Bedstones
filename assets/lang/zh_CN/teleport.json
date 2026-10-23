@@ -1,0 +1,13 @@
+{
+  "chat.waystones.waystone_missing": "你试图传送前往的传送石正在被移动或已经消失。",
+  "chat.waystones.cannot_transport_leashed": "你无法带着拴住的生物传送",
+  "chat.waystones.cannot_transport_leashed_dimensional": "你无法带着拴住的生物跨维度传送",
+  "chat.waystones.cannot_transport_this_leashed": "你无法带着这个生物传送",
+  "chat.waystones.not_enough_xp": "你没有足够的经验进行传送。",
+  "chat.waystones.teleport_no_longer_valid": "传送无法完成。",
+  "chat.waystones.source_item_missing": "你已不再手持用于传送的物品。",
+  "chat.waystones.source_waystone_out_of_range": "你离传送石太远了。",
+  "chat.waystones.teleport_failed": "传送失败。",
+  "chat.waystones.destination_out_of_bounds": "目的地超出了世界边界。",
+  "chat.waystones.destination_chunk_load_failed": "无法加载目的地。"
+}

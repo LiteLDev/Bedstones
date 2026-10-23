@@ -1,0 +1,5 @@
+item.bedstones:warp_stone.name=Warp Stone
+item.bedstones:warp_scroll.name=Warp Scroll
+item.bedstones:return_scroll.name=Return Scroll
+item.bedstones:blank_scroll.name=Blank Scroll
+item.bedstones:bound_scroll.name=Bound Scroll

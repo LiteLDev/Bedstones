@@ -7,8 +7,10 @@
 //   slots 1-4  modifier items (any item, Waystones' warp modifiers have effects)
 //
 // JSON: "container": [ null | {"id": "minecraft:diamond", "count": 2, "aux": 0,
-//                              "user": {"bs_attunement": "<uid>", ...}}, ... ]  (always 5 entries)
-// `user` holds the item's user-data strings (all of Bedstones' item NBT is strings, game/Ids.h).
+//                              "user": {"bs_attunement": "<uid>", ...}, "nbt": "<SNBT>"}, ... ]
+// (always 5 entries). `user` holds Bedstones' user-data strings (game/Ids.h) for easy reading;
+// `nbt` is the item's whole user data (enchantments, custom name, damage, ...) as SNBT, so items
+// keep everything when they go through the container (empty when the item has none).
 //
 // Writers: U3 (shard insert / eject / attunement), U13 (Warp Modifiers screen). Readers: U3 (target
 // choice, plate timing, redstone), U7/U13 (arrival effects), U1/U3 (drop contents on break).
@@ -29,6 +31,7 @@ struct SlotItem {
     int                                count = 1;
     int                                aux   = 0;
     std::map<std::string, std::string> user; ///< user-data strings (NBT keys from ids::kNbt*)
+    std::string                        nbt;  ///< the whole user data as SNBT ("" = none)
 
     [[nodiscard]] bool operator==(SlotItem const&) const = default;
 };
@@ -41,7 +44,7 @@ using Container                              = std::array<std::optional<SlotItem
 /// Stores the container in the record. Call `Waystones::markDirty(uid)` afterwards.
 void setContainer(core::WaystoneRecord& record, Container const& container);
 
-/// ItemStack <-> slot item (only id, count, aux and user-data strings survive).
+/// ItemStack <-> slot item (id, count, aux and the whole user data).
 [[nodiscard]] std::optional<SlotItem> toSlotItem(ItemStack const& stack);
 [[nodiscard]] ItemStack               toStack(SlotItem const& item);
 

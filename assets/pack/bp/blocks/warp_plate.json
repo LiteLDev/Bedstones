@@ -1,0 +1,588 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "bedstones:warp_plate",
+      "menu_category": {
+        "category": "construction"
+      },
+      "states": {
+        "bedstones:status": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "bedstones:plate_color": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ]
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.bedstones:warp_plate.name",
+      "minecraft:geometry": "geometry.bedstones_warp_plate",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "bedstones_warp_plate_base",
+          "render_method": "alpha_test"
+        },
+        "inner": {
+          "texture": "bedstones_warp_plate_inner",
+          "render_method": "alpha_test"
+        }
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -8,
+          0,
+          -8
+        ],
+        "size": [
+          16,
+          1,
+          16
+        ]
+      },
+      "minecraft:selection_box": {
+        "origin": [
+          -8,
+          0,
+          -8
+        ],
+        "size": [
+          16,
+          2,
+          16
+        ]
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 5
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 2000
+      },
+      "minecraft:movable": {
+        "movement_type": "immovable"
+      },
+      "minecraft:loot": "loot_tables/blocks/bedstones_warp_plate.json",
+      "minecraft:light_dampening": 0,
+      "minecraft:map_color": "#8a8a8f",
+      "tag:minecraft:is_pickaxe_item_destructible": {},
+      "tag:stone": {}
+    },
+    "permutations": [
+      {
+        "condition": "q.block_state('bedstones:status') == 0",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_inner",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 6",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_lock",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 0",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_0",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 0",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_0",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 1",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_1",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 1",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_1",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 2",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_2",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 2",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_2",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 3",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_3",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 3",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_3",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 4",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_4",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 4",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_4",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 5",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_5",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 5",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_5",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 6",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_6",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 6",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_6",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 7",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_7",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 7",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_7",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 8",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_8",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 8",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_8",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 9",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_9",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 9",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_9",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 10",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_10",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 10",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_10",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 11",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_11",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 11",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_11",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 12",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_12",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 12",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_12",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 13",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_13",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 13",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_13",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') != 0 && q.block_state('bedstones:status') != 6 && q.block_state('bedstones:status') != 3 && q.block_state('bedstones:plate_color') == 14",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_14",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('bedstones:status') == 3 && q.block_state('bedstones:plate_color') == 14",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "bedstones_warp_plate_base",
+              "render_method": "alpha_test"
+            },
+            "inner": {
+              "texture": "bedstones_warp_plate_runes_glow_14",
+              "render_method": "alpha_test"
+            }
+          },
+          "minecraft:light_emission": 7
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "bs_orange_sharestone": {
+    "textures": "textures/blocks/sharestone/orange_sharestone"
+  },
+  "bs_magenta_sharestone": {
+    "textures": "textures/blocks/sharestone/magenta_sharestone"
+  },
+  "bs_light_blue_sharestone": {
+    "textures": "textures/blocks/sharestone/light_blue_sharestone"
+  },
+  "bs_yellow_sharestone": {
+    "textures": "textures/blocks/sharestone/yellow_sharestone"
+  },
+  "bs_lime_sharestone": {
+    "textures": "textures/blocks/sharestone/lime_sharestone"
+  },
+  "bs_pink_sharestone": {
+    "textures": "textures/blocks/sharestone/pink_sharestone"
+  },
+  "bs_gray_sharestone": {
+    "textures": "textures/blocks/sharestone/gray_sharestone"
+  },
+  "bs_light_gray_sharestone": {
+    "textures": "textures/blocks/sharestone/light_gray_sharestone"
+  },
+  "bs_cyan_sharestone": {
+    "textures": "textures/blocks/sharestone/cyan_sharestone"
+  },
+  "bs_purple_sharestone": {
+    "textures": "textures/blocks/sharestone/purple_sharestone"
+  },
+  "bs_blue_sharestone": {
+    "textures": "textures/blocks/sharestone/blue_sharestone"
+  },
+  "bs_brown_sharestone": {
+    "textures": "textures/blocks/sharestone/brown_sharestone"
+  },
+  "bs_green_sharestone": {
+    "textures": "textures/blocks/sharestone/green_sharestone"
+  },
+  "bs_red_sharestone": {
+    "textures": "textures/blocks/sharestone/red_sharestone"
+  },
+  "bs_black_sharestone": {
+    "textures": "textures/blocks/sharestone/black_sharestone"
+  }
+}

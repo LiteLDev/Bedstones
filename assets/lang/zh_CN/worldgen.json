@@ -1,0 +1,11 @@
+{
+    "bs.worldgen.locate": "最近的野外传送石：{} ~ {}（距离 {} 格，区块 {}, {}）：{}",
+    "bs.worldgen.locate.disabled": "野外传送石已禁用（chunksBetweenWildWaystones = 0）。",
+    "bs.worldgen.locate.status.disabled": "此维度已禁用",
+    "bs.worldgen.locate.status.placed": "已生成于 y {}",
+    "bs.worldgen.locate.status.skipped": "区块已生成但未放置传送石（空间不足）",
+    "bs.worldgen.locate.status.pending": "尚未生成",
+    "bs.worldgen.testblock.off": "世界生成仅使用传送石方块。",
+    "bs.worldgen.testblock.unknown": "未知方块：{}",
+    "bs.worldgen.testblock.set": "缺失的传送石方块将以 {} 生成（调试）。"
+}

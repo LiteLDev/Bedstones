@@ -1,0 +1,8 @@
+{
+  "container.waystones.warp_modifiers": "传送修饰物",
+  "bs.modifiers.inventory": "物品栏",
+  "bs.modifiers.form.hint": "选择一个槽位，放入手持的物品或取出其中的物品。",
+  "bs.modifiers.form.shard_slot": "碎片",
+  "bs.modifiers.form.modifier_slot": "修饰物 {}",
+  "bs.modifiers.form.done": "完成"
+}

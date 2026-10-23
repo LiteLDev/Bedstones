@@ -1,0 +1,101 @@
+{
+  "bedstones_warp_plate_base": {
+    "textures": "textures/blocks/warp_plate_base"
+  },
+  "bedstones_warp_plate_inner": {
+    "textures": "textures/blocks/warp_plate_inner"
+  },
+  "bedstones_warp_plate_lock": {
+    "textures": "textures/blocks/warp_plate_lock"
+  },
+  "bedstones_warp_plate_runes_0": {
+    "textures": "textures/blocks/warp_plate_runes_0"
+  },
+  "bedstones_warp_plate_runes_glow_0": {
+    "textures": "textures/blocks/warp_plate_runes_glow_0"
+  },
+  "bedstones_warp_plate_runes_1": {
+    "textures": "textures/blocks/warp_plate_runes_1"
+  },
+  "bedstones_warp_plate_runes_glow_1": {
+    "textures": "textures/blocks/warp_plate_runes_glow_1"
+  },
+  "bedstones_warp_plate_runes_2": {
+    "textures": "textures/blocks/warp_plate_runes_2"
+  },
+  "bedstones_warp_plate_runes_glow_2": {
+    "textures": "textures/blocks/warp_plate_runes_glow_2"
+  },
+  "bedstones_warp_plate_runes_3": {
+    "textures": "textures/blocks/warp_plate_runes_3"
+  },
+  "bedstones_warp_plate_runes_glow_3": {
+    "textures": "textures/blocks/warp_plate_runes_glow_3"
+  },
+  "bedstones_warp_plate_runes_4": {
+    "textures": "textures/blocks/warp_plate_runes_4"
+  },
+  "bedstones_warp_plate_runes_glow_4": {
+    "textures": "textures/blocks/warp_plate_runes_glow_4"
+  },
+  "bedstones_warp_plate_runes_5": {
+    "textures": "textures/blocks/warp_plate_runes_5"
+  },
+  "bedstones_warp_plate_runes_glow_5": {
+    "textures": "textures/blocks/warp_plate_runes_glow_5"
+  },
+  "bedstones_warp_plate_runes_6": {
+    "textures": "textures/blocks/warp_plate_runes_6"
+  },
+  "bedstones_warp_plate_runes_glow_6": {
+    "textures": "textures/blocks/warp_plate_runes_glow_6"
+  },
+  "bedstones_warp_plate_runes_7": {
+    "textures": "textures/blocks/warp_plate_runes_7"
+  },
+  "bedstones_warp_plate_runes_glow_7": {
+    "textures": "textures/blocks/warp_plate_runes_glow_7"
+  },
+  "bedstones_warp_plate_runes_8": {
+    "textures": "textures/blocks/warp_plate_runes_8"
+  },
+  "bedstones_warp_plate_runes_glow_8": {
+    "textures": "textures/blocks/warp_plate_runes_glow_8"
+  },
+  "bedstones_warp_plate_runes_9": {
+    "textures": "textures/blocks/warp_plate_runes_9"
+  },
+  "bedstones_warp_plate_runes_glow_9": {
+    "textures": "textures/blocks/warp_plate_runes_glow_9"
+  },
+  "bedstones_warp_plate_runes_10": {
+    "textures": "textures/blocks/warp_plate_runes_10"
+  },
+  "bedstones_warp_plate_runes_glow_10": {
+    "textures": "textures/blocks/warp_plate_runes_glow_10"
+  },
+  "bedstones_warp_plate_runes_11": {
+    "textures": "textures/blocks/warp_plate_runes_11"
+  },
+  "bedstones_warp_plate_runes_glow_11": {
+    "textures": "textures/blocks/warp_plate_runes_glow_11"
+  },
+  "bedstones_warp_plate_runes_12": {
+    "textures": "textures/blocks/warp_plate_runes_12"
+  },
+  "bedstones_warp_plate_runes_glow_12": {
+    "textures": "textures/blocks/warp_plate_runes_glow_12"
+  },
+  "bedstones_warp_plate_runes_13": {
+    "textures": "textures/blocks/warp_plate_runes_13"
+  },
+  "bedstones_warp_plate_runes_glow_13": {
+    "textures": "textures/blocks/warp_plate_runes_glow_13"
+  },
+  "bedstones_warp_plate_runes_14": {
+    "textures": "textures/blocks/warp_plate_runes_14"
+  },
+  "bedstones_warp_plate_runes_glow_14": {
+    "textures": "textures/blocks/warp_plate_runes_glow_14"
+  }
+}

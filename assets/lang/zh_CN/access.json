@@ -1,0 +1,8 @@
+{
+  "chat.waystones.only_owner_can_edit": "只有所有者可以编辑此传送石碑。",
+  "chat.waystones.only_creative_can_edit": "只有创造模式玩家可以编辑此传送石碑。",
+  "chat.waystones.only_creative_can_edit_global": "只有创造模式玩家可以编辑此传送石碑。",
+  "waystones.configuration.general.restrictedWaystones": "受限的传送石碑",
+  "waystones.configuration.general.defaultVisibility": "默认可见性",
+  "waystones.configuration.general.allowEveryoneToManageGlobalWaystones": "允许所有人管理全局传送石碑"
+}

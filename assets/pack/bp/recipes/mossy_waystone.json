@@ -1,0 +1,35 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "bedstones:mossy_waystone"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      " S ",
+      "SWS",
+      "OOO"
+    ],
+    "key": {
+      "S": {
+        "item": "minecraft:mossy_stone_bricks"
+      },
+      "W": {
+        "item": "bedstones:warp_stone"
+      },
+      "O": {
+        "item": "minecraft:obsidian"
+      }
+    },
+    "unlock": [
+      {
+        "item": "bedstones:warp_stone"
+      }
+    ],
+    "result": {
+      "item": "bedstones:mossy_waystone"
+    }
+  }
+}

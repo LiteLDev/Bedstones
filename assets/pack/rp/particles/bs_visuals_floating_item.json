@@ -1,0 +1,36 @@
+{
+    "format_version": "1.10.0",
+    "particle_effect": {
+        "description": {
+            "identifier": "bedstones:visuals_floating_item",
+            "basic_render_parameters": {
+                "material": "particles_alpha",
+                "texture": "textures/bs_visuals/floating_warp_stone"
+            }
+        },
+        "components": {
+            "minecraft:emitter_rate_instant": { "num_particles": 1 },
+            "minecraft:emitter_lifetime_once": { "active_time": 0.05 },
+            "minecraft:emitter_shape_point": { "offset": [0, 0, 0], "direction": [0, 0, 0] },
+            "minecraft:particle_lifetime_expression": { "max_lifetime": "v.bs_life" },
+            "minecraft:particle_initial_speed": 0,
+            "minecraft:particle_motion_parametric": {
+                "relative_position": [0, "math.sin((v.bs_bob0 + v.particle_age * 20) / 8 * 57.29578) * 0.025", 0]
+            },
+            "minecraft:particle_appearance_billboard": {
+                "size": ["v.bs_size", "v.bs_size"],
+                "facing_camera_mode": "direction_z",
+                "direction": {
+                    "mode": "custom",
+                    "custom_direction": [
+                        "math.sin((v.bs_spin0 + v.particle_age * 20) / 2) * v.bs_side",
+                        0,
+                        "math.cos((v.bs_spin0 + v.particle_age * 20) / 2) * v.bs_side"
+                    ]
+                },
+                "uv": { "texture_width": 16, "texture_height": 16, "uv": [0, 0], "uv_size": [16, 16] }
+            },
+            "minecraft:particle_appearance_lighting": {}
+        }
+    }
+}
