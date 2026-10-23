@@ -64,7 +64,8 @@ Assert-Near $L.TitleY $L.Top 'title y (source waystone present)'
 Assert-Near $L.SearchX ($L.Left + 25) 'search x'; Assert-Near $L.SearchY ($L.Top + 40) 'search y'
 Assert-Near $L.SearchW 198 'search width (with sort button)'; Assert-Near $L.SearchH 20 'search height'
 if ($L.Sort -ne "$($L.Left + 225),$($L.Top + 40)") { throw "layout: sort button at $($L.Sort)" }
-if ($L.Manage -ne "$($L.Left - 8),$($L.Top + 40),inactive") { throw "layout: manage button $($L.Manage) (expected inactive without the manage unit)" }
+# Active with the Manage Waystones unit (U11), inactive without it.
+if ($L.Manage -notmatch "^$($L.Left - 8),$($L.Top + 40),(active|inactive)$") { throw "layout: manage button $($L.Manage)" }
 Assert-Near $L.ListX ($L.Left + 25) 'list x'; Assert-Near $L.ListY ($L.Top + 64) 'list y'
 $firstGroup = ($L.Groups -split ';')[0]
 if ($firstGroup -notmatch "^waystones:favorites@$($L.Left - 8),$($L.Top + 65)$") { throw "layout: first group button $firstGroup" }

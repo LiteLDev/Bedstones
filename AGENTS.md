@@ -99,7 +99,8 @@ Registrations live in .cpp files linked directly into the DLL, so they are never
   edit -> modifiers). `openScreen` returns false when the owning unit is absent: degrade gracefully
   (hide or disable the button, `service::hasScreen(name)`).
 - **Block container** (`game/BlockContainer.h`): the 5-slot shard + modifier inventory of waystones
-  and warp plates, in `record.extra["container"]` (slot 0 shard, 1-4 modifiers).
+  and warp plates, in `record.extra["container"]` (slot 0 shard, 1-4 modifiers). Items keep their
+  whole user data (`SlotItem::nbt`, SNBT): enchantments and names survive.
 - **Groups** (`service::get<IGroups>()`, ids in `service::groups`): `groups(player)` and
   `groupsOf(player, target)`; favorites are the explicit group `waystones:favorites` in
   `playerData.groups[uid]`.
@@ -132,10 +133,21 @@ Registrations live in .cpp files linked directly into the DLL, so they are never
 - **Logging**: `bs::log()` (`mod/Log.h`). No per-tick logging. Log one line per user-visible action
   that e2e scenarios can wait for (e.g. `waystone activated: <name> by <player>`).
 - **Selftests** (`selftest/SelfTest.h`): `ctx.player()` (SimulatedPlayer), `ctx.spawnPlayer()`,
-  `ctx.testPos(dx)` (distinct `dx` per test), `ctx.createWaystone(record)`, `ctx.setBlock(pos, id,
-  states)`, `ctx.cleanupBlock/cleanupWaystone`, `ctx.give`, `co_await ctx.ticks(n)`,
+  `ctx.testPos(dx)` (distinct `dx` per test; unit U<n> owns dx 100n..100n+99; positions are spread
+  over a compact area east of the spawn that the run keeps loaded with a ticking area, at the
+  surface; a larger dx in the same hundred is farther from a player at the spawn),
+  `ctx.createWaystone(record, withBlock)` (`withBlock` places the real block: the teleport checks
+  that the target block exists), `ctx.placeRecordBlock(record)`, `ctx.setBlock(pos, id, states)`,
+  `ctx.cleanupBlock/cleanupWaystone`, `ctx.give`, `co_await ctx.ticks(n)`,
+  `co_await ctx.ensureLoaded(pos)` (test player next to `pos`, chunks loaded), `ctx.freeWarps()`
+  (warps cost nothing for the rest of the test: use it when a test is not about costs),
   `ctx.check/require/fail/info`. Screens for simulated players: `net::setCompanion(p, info)` +
-  `net::setTestSink(...)`, drive them with `net::screens::simulateAction`.
+  `net::setTestSink(...)`, drive them with `net::screens::simulateAction`. Swap a seam in a test
+  only by moving `service::detail::slot<I>()` out and back (RAII); `service::set/reset` in a test
+  would drop the installed unit's implementation for every later test. `/waystones selftest` (no
+  glob) and the server scenario `full` run every unit's tests together: keep them passing there.
+- **Debug commands** that create waystone records for e2e runs place the real block with
+  `game::placeRecordBlock(record)`; a record without its block is "gone" for the teleport.
 
 ## Client mod
 

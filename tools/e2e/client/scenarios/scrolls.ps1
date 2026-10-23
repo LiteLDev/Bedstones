@@ -41,8 +41,9 @@ Wait-LogLine 'scroll charging: bedstones:warp_scroll' 5 -Since $mark | Out-Null
 Wait-LogLine 'scroll charged: bedstones:warp_scroll by .*, opening selection' 10 -Since $mark | Out-Null
 Start-Sleep -Milliseconds 1500
 Save-Screenshot 'selection' | Out-Null
-Click $FirstEntryX $FirstEntryY -Relative
-Wait-LogLine "warp: .* -> ($aUid|$bUid)" 10 -Since $mark | Out-Null
+Select-SelectionRow -Since $mark -Index 0 -FormY $FirstEntryY
+Wait-LogLine "selection: .* selected .* \(($aUid|$bUid)\)" 10 -Since $mark | Out-Null
+Wait-LogLine 'warp: .* -> ' 10 -Since $mark | Out-Null
 Wait-LogLine 'scroll consumed: bedstones:warp_scroll by .* \(left 2\)' 10 -Since $mark | Out-Null
 Start-Sleep -Milliseconds 1200
 Save-Screenshot 'warped' | Out-Null
@@ -62,7 +63,7 @@ $mark = Get-LogMark
 Hold-Use 2000 'stone_charging'
 Wait-LogLine 'scroll charged: bedstones:warp_stone by .*, opening selection' 10 -Since $mark | Out-Null
 Start-Sleep -Milliseconds 1500
-Click $FirstEntryX $FirstEntryY -Relative
+Select-SelectionRow -Since $mark -Index 0 -FormY $FirstEntryY
 Wait-LogLine 'warp stone damaged: 1/128' 10 -Since $mark | Out-Null
 Start-Sleep -Milliseconds 1500
 Save-Screenshot 'stone_warped' | Out-Null
@@ -77,9 +78,9 @@ Move-Mouse 0.5055 0.728 -Relative
 Start-Sleep -Milliseconds 800
 Save-Screenshot 'blank_tooltip' | Out-Null
 Close-Screen
-# Waystone A's block (a lodestone stands in for it): stand on it and look straight down.
-Invoke-Chat ("/setblock {0} {1} {2} lodestone" -f $ax, $ay, $az)
-Invoke-Chat ("/tp @s {0}.5 {1} {2}.5 facing {0}.5 {3} {2}.5" -f $ax, ($ay + 1), $az, ($ay - 10))
+# Waystone A's real block (placed by /waystones debug scrolls): stand two blocks north of it and
+# look at its lower half.
+Invoke-Chat ("/tp @s {0}.5 {1} {2}.5 facing {0}.5 {3}.5 {4}.5" -f $ax, $ay, ($az - 2), $ay, $az)
 Start-Sleep -Milliseconds 800
 Save-Screenshot 'bind_target' | Out-Null
 $mark = Get-LogMark
@@ -88,6 +89,7 @@ Wait-LogLine 'scroll bound: Scroll Test A' 10 -Since $mark | Out-Null
 Start-Sleep -Milliseconds 600
 Save-Screenshot 'bound' | Out-Null
 Invoke-Chat ("/tp @s {0} {1} {2} facing {0} {3} {4}" -f ($ax - 20), $ay, ($az - 20), ($ay + 1), ($az - 40))
+Start-Sleep -Milliseconds 1500   # away from waystone A first (a right-click on it would open its menu)
 $mark = Get-LogMark
 Hold-Use 2000 'bound_charging'
 Wait-LogLine "scroll charged: bedstones:bound_scroll by .*, warping to $aUid" 10 -Since $mark | Out-Null

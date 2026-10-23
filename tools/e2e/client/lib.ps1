@@ -41,8 +41,10 @@ function Set-E2EInstance([int]$Slot) {
     $script:LockFile     = if ($Slot -le 1) { Join-Path $script:LauncherData 'bei-e2e.lock' } else { Join-Path $script:LauncherData "hi$Slot-e2e.lock" }
     # LeviHeadlessInput control pipe of this instance's game.
     $script:HeadlessPipe = "LeviHeadlessInput-$script:VersionName"
+    # Child pwsh processes that source this file (helpers, scenario scripts) start on the same slot.
+    $env:BS_E2E_INSTANCE_SLOT = "$Slot"
 }
-Set-E2EInstance 1
+Set-E2EInstance $(if ($env:BS_E2E_INSTANCE_SLOT -match '^\d+$') { [int]$env:BS_E2E_INSTANCE_SLOT } else { 1 })
 $script:WorldName    = 'BS-Test'
 $script:Unit         = 'scratch'
 
@@ -215,6 +217,7 @@ function Deploy-Mod([string]$BinDir) {
     # Fresh copy every run (no config/data carried over), so runs are reproducible.
     if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
     Copy-Item -Recurse -Force $BinDir $dest
+    Set-TestModConfig $dest
     Write-Step "deployed $BinDir -> $dest"
 }
 
@@ -493,7 +496,7 @@ function Start-LogSession {
     $script:LogPos = if (Test-Path $script:LogFile) { (Get-Item $script:LogFile).Length } else { 0L }
 }
 
-# Remote modes: the BDS console log (tools/e2e/server/out/client-host/server.log) is merged into
+# Remote modes: the BDS console log (tools/e2e/server/out/client-host-<unit>/server.log) is merged into
 # the session log (lines prefixed "[host] "), so scenarios wait for server-side lines the same
 # way in every mode.
 $script:HostLog    = $null
@@ -763,4 +766,28 @@ function Invoke-Chat([string]$text) {
     Press-Key T; Start-Sleep -Milliseconds 700
     Type-Text $text
     Press-Key ENTER; Start-Sleep -Milliseconds 800
+}
+
+# Clicks an entry of the waystone selection menu opened since log mark $Since: the native screen
+# (U10) when its layout was logged, otherwise the vanilla form fallback (button at $FormY).
+# -Name picks the row by its label ("selection screen: rows=a|b|..."), else -Index (0 = first).
+function Select-SelectionRow([int]$Since, [string]$Name, [int]$Index = 0, [double]$FormY = 0.36, [int]$WaitSeconds = 6) {
+    $deadline = (Get-Date).AddSeconds($WaitSeconds)
+    $layout   = $null
+    while (-not $layout -and (Get-Date) -lt $deadline) {
+        $layout = @(Get-LeviLog -Since $Since | Where-Object { $_ -match 'selection screen: layout ' }) | Select-Object -Last 1
+        if (-not $layout) { Start-Sleep -Milliseconds 200 }
+    }
+    if (-not $layout) { Click 0.5 $FormY -Relative; return }
+    if ($layout -notmatch 'screen=([\d.]+)x([\d.]+) .* list=([-\d.]+),([-\d.]+)') { throw "unparsable selection layout: $layout" }
+    $w = [double]$Matches[1]; $h = [double]$Matches[2]; $lx = [double]$Matches[3]; $ly = [double]$Matches[4]
+    if ($Name) {
+        $rowsLine = @(Get-LeviLog -Since $Since | Where-Object { $_ -match 'selection screen: rows=' }) | Select-Object -Last 1
+        $null = $rowsLine -match 'rows=(.*) sort='
+        $rows = @($Matches[1] -split '\|')
+        $Index = [array]::IndexOf($rows, $Name)
+        if ($Index -lt 0) { throw "selection row '$Name' not listed: $($rows -join ', ')" }
+    }
+    Start-Sleep -Milliseconds 400
+    Click (($lx + 110) / $w) (($ly + 22 * $Index + 11) / $h) -Relative
 }

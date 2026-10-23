@@ -609,21 +609,28 @@ public:
         mListeners.push_back(bus.emplaceListener<ll::event::PlayerInteractBlockEvent>(
             [](ll::event::PlayerInteractBlockEvent& ev) {
                 auto& player = ev.self();
-                if (player.isClientSide() || ev.isCancelled()) return;
+                if (player.isClientSide()) return;
+                auto heldId = game::idOf(player.getSelectedItem());
+                if (heldId == ids::id(ids::kBlankScroll)) {
+                    // The scroll's own use binds it (scrolls unit, which cancels the event: this
+                    // listener runs first, at Highest); the repeated interact events of the same click
+                    // then hold the new bound scroll and must not open the menu.
+                    state().lastUse[player.getOrCreateUniqueID().rawID] = state().now;
+                    return;
+                }
+                if (ev.isCancelled()) return;
                 auto&       region = player.getDimensionBlockSource();
                 auto const& pos    = ev.blockPos();
                 if (!isWaystoneBlock(region.getBlock(pos))) return;
-                auto heldId  = game::idOf(player.getSelectedItem());
                 bool sneak   = player.isSneaking();
                 bool hasItem = !player.getSelectedItem().isNull() || !player.getOffhandSlot().isNull();
                 // Vanilla: sneaking with an item in hand skips the block's interaction (the item is
                 // used / placed instead).
                 if (sneak && hasItem) return;
-                if (heldId == ids::id(ids::kBlankScroll)) return; // the scroll's own use handles it
                 ev.cancel();
                 queueAction(player, Action::Kind::Use, game::globalPos(region, pos), static_cast<int>(ev.face()), sneak, heldId);
             },
-            ll::event::EventPriority::High
+            ll::event::EventPriority::Highest
         ));
         // Placing a waystone item: the game would place only the default (lower) state; both halves
         // are placed on the next tick instead.

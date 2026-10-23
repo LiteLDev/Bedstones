@@ -52,8 +52,8 @@ Focus-Game
 Wait-LogLine 'portal scroll charged by' 10 -Since $mark | Out-Null
 Start-Sleep -Milliseconds 1500
 Save-Screenshot 'scroll_selection' | Out-Null
-# The selection menu lists the memorial (pinned, first button).
-Click 0.5 0.36 -Relative
+# The selection menu lists the memorial (pinned, first row).
+Select-SelectionRow -Since $mark -Index 0 -FormY 0.36
 $opened = Wait-LogLine "warp portal opened: (\S+) -> $memUid by " 10 -Since $mark
 Start-Sleep -Seconds 2
 Save-Screenshot 'portal' | Out-Null

@@ -66,9 +66,11 @@ Click 0.5 0.5 -Relative -Right
 Wait-LogLine 'sharestone used: .* by ' 10 -Since $mark | Out-Null
 Start-Sleep -Milliseconds 1500
 Save-Screenshot 'selection' | Out-Null
-# The default selection (form) lists the other sharestone as its first button.
-Click 0.5 0.355 -Relative
-$warp = Wait-LogLine "warp: .* -> $uidA" 10 -Since $mark
+# The selection lists the other sharestone (the clicked one is shown as the current, disabled row).
+# Rows are in manual order: sharestone A (placed first) is row 0.
+Select-SelectionRow -Since $mark -Index 0 -FormY 0.355
+Wait-LogLine "selection: .* selected .* \($uidA\)" 10 -Since $mark | Out-Null
+$warp = Wait-LogLine 'warp: .* -> ' 10 -Since $mark
 Start-Sleep -Milliseconds 1500
 Save-Screenshot 'warped' | Out-Null
 

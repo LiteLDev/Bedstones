@@ -42,8 +42,9 @@ Wait-LogLine 'feather: debug menu for .+ \(1 partner' 15 -Since $mark | Out-Null
 Start-Sleep -Milliseconds 1500
 Save-Screenshot 'menu' | Out-Null
 # Pick the partner: the warp lands at Twin.
+$menuMark = $mark
 $mark = Get-LogMark
-Click 0.5 0.343 -Relative
+Select-SelectionRow -Since $menuMark -Name 'Twin' -FormY 0.343
 Wait-LogLine 'feather warp: .+ -> player:' 15 -Since $mark | Out-Null
 Start-Sleep -Milliseconds 800
 Save-Screenshot 'warped' | Out-Null

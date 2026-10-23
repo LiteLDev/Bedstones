@@ -37,11 +37,19 @@ Save-Screenshot 'edit_open' | Out-Null
 
 Click-Gui $edit 75 79                 # the name field
 Type-Text 'Bedstones Test'
-Click-Gui $edit 10 105                # visibility icon button: next option
-Wait-LogLine 'edit screen: visibility -> global' 10 -Since $mark | Out-Null
-Start-Sleep -Milliseconds 500
-$cycles = @(Get-LeviLog -Since $mark | Select-String 'edit screen: visibility -> ').Count
-if ($cycles -ne 1) { throw "one click must cycle the visibility once (saw $cycles)" }
+# Visibility icon button: each click is one step (Activation -> Team -> Global with the permissions
+# unit; Activation -> Global with the foundation defaults), until Global.
+$clicks = 0
+do {
+    $before = @(Get-LeviLog -Since $mark | Select-String 'edit screen: visibility -> ').Count
+    Click-Gui $edit 10 105
+    $clicks++
+    Wait-LogLine 'edit screen: visibility -> ' 10 -Since $mark | Out-Null
+    Start-Sleep -Milliseconds 500
+    $after = @(Get-LeviLog -Since $mark | Select-String 'edit screen: visibility -> ').Count
+    if ($after - $before -ne 1) { throw "one click must cycle the visibility once (saw $($after - $before))" }
+} until (@(Get-LeviLog -Since $mark | Select-String 'edit screen: visibility -> global').Count -gt 0 -or $clicks -ge 4)
+Wait-LogLine 'edit screen: visibility -> global' 2 -Since $mark | Out-Null
 Move-Mouse (($edit.L + 120) / $edit.W) (($edit.T + 30) / $edit.H) -Relative
 Start-Sleep -Milliseconds 400
 Save-Screenshot 'edit_typed' | Out-Null

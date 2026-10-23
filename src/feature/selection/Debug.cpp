@@ -9,6 +9,7 @@
 
 #include "ll/api/command/CommandHandle.h"
 
+#include "mc/deps/core/math/Vec2.h"
 #include "mc/deps/core/math/Vec3.h"
 #include "mc/server/commands/CommandOrigin.h"
 #include "mc/server/commands/CommandOutput.h"
@@ -164,7 +165,14 @@ BS_REGISTER_SUBCOMMAND([](ll::command::CommandHandle& cmd) {
         auto* p = commands::playerOf(origin);
         if (!p) return output.error("Only players can open screens.");
         if (!commands::isAdmin(origin)) return output.error("You need operator permission.");
-        service::get<service::ISelection>().open(*p, debugSource());
+        auto src = debugSource();
+        // A menu opened from a waystone closes when the player is out of its reach (teleport unit):
+        // stand next to the home waystone first, as a real player would.
+        if (src.kind == core::WarpSourceKind::Waystone && static_cast<int>(p->getDimensionId()) == src.fromPos.dim) {
+            Vec3 at{static_cast<float>(src.fromPos.x) + 0.5f, static_cast<float>(src.fromPos.y), static_cast<float>(src.fromPos.z) - 1.5f};
+            if (p->getPosition().distanceTo(at) > 3.f) p->teleport(at, p->getDimensionId(), Vec2{0.f, 0.f});
+        }
+        service::get<service::ISelection>().open(*p, src);
         output.success("selection opened");
     });
     cmd.overload().text("debug").text("selection").text("setup").execute([](CommandOrigin const& origin, CommandOutput& output) {
