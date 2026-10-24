@@ -7,10 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-24
+
+### Fixed
+
+- Commands that take a position (such as `/waystones activate <player> <x y z>`) found the wrong block at negative coordinates and answered "Waystone not found at this position".
+
 ### Added
 
-- A logo (`docs/logo.png`), shown on [LeviMC Mods](https://levimc.org/mods/) through `avatar_url` in `tooth.json`.
-- A player-facing README, and screenshots and a video for the LeviMC Mods gallery (`docs/showcase/`).
+- A logo, and screenshots and a video of waystones, sharestones, warp plates and teleporting in the [LeviMC Mods gallery](https://levimc.org/mods/github.com/LiteLDev/Bedstones/?tab=gallery).
+
+### Changed
+
+- A shorter README written for players. Notes for developers moved to [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## [0.1.0] - 2026-10-24
 
@@ -57,5 +66,6 @@ First release. Bedstones brings the behaviour of the Java mod Waystones 21.1.46 
 - **Translations**: English and Simplified Chinese.
 - **Resource pack on servers**: a dedicated server adds the behavior pack and resource pack to the world, and joining players download the textures.
 
-[Unreleased]: https://github.com/LiteLDev/Bedstones/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/LiteLDev/Bedstones/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/LiteLDev/Bedstones/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/LiteLDev/Bedstones/releases/tag/v0.1.0
