@@ -1,0 +1,61 @@
+{
+  "items": [
+    {
+      "kind": "video",
+      "src": "teleport.mp4",
+      "poster": "teleport-poster.webp",
+      "width": 1280, "height": 720,
+      "title":   { "en": "Warp between waystones", "zh-CN": "在传送石之间传送" },
+      "caption": { "en": "Right-click a waystone, pick where to go, and you are there.", "zh-CN": "右键传送石，选好目的地，转眼就到。" }
+    },
+    {
+      "kind": "image",
+      "src": "waystone.webp",
+      "width": 1280, "height": 720,
+      "title":   { "en": "A waystone by the sea", "zh-CN": "海边的传送石" },
+      "caption": { "en": "Its runes light up once you have activated it.", "zh-CN": "激活之后，石上的符文就会亮起来。" }
+    },
+    {
+      "kind": "image",
+      "src": "selection.webp",
+      "width": 1280, "height": 720,
+      "title":   { "en": "The Waystones menu", "zh-CN": "传送石菜单" },
+      "caption": { "en": "Every waystone you have found, with its distance, search, sorting and groups.", "zh-CN": "列出你找到的每一块传送石和距离，还能搜索、排序、分组。" }
+    },
+    {
+      "kind": "image",
+      "src": "styles.webp",
+      "width": 1280, "height": 400,
+      "title":   { "en": "Ten styles", "zh-CN": "十种样式" },
+      "caption": { "en": "Mud brick, prismarine, purpur, red nether brick, end stone, blackstone, deepslate, sandy, mossy and the classic one.", "zh-CN": "泥砖、海晶石、紫珀、红色下界砖、末地石、黑石、深板岩、砂岩、苔石，以及经典款。" }
+    },
+    {
+      "kind": "image",
+      "src": "sharestones.webp",
+      "width": 1280, "height": 720,
+      "title":   { "en": "Sharestones", "zh-CN": "共享石" },
+      "caption": { "en": "Every sharestone of one colour links to all the others, for everyone on the server.", "zh-CN": "同色的共享石彼此相连，服务器上人人可用，无需激活。" }
+    },
+    {
+      "kind": "image",
+      "src": "warp-plate.webp",
+      "width": 1280, "height": 720,
+      "title":   { "en": "Warp plates", "zh-CN": "传送板" },
+      "caption": { "en": "The left plate holds the right one's attuned shard: step on it and you land on the other.", "zh-CN": "左边的传送板放着右边那块调谐过的碎片，踩上去就会被送到另一块上。" }
+    },
+    {
+      "kind": "image",
+      "src": "edit.webp",
+      "width": 1280, "height": 720,
+      "title":   { "en": "Name it, choose who sees it", "zh-CN": "命名，并决定谁能看到" },
+      "caption": { "en": "Shift + right-click your waystone to rename it or change its visibility.", "zh-CN": "潜行右键自己的传送石，可以改名或修改可见范围。" }
+    },
+    {
+      "kind": "image",
+      "src": "hilltop-grove.webp",
+      "width": 1280, "height": 720,
+      "title":   { "en": "A mossy waystone in the jungle", "zh-CN": "丛林里的苔石传送石" },
+      "caption": { "en": "Put one wherever you want to come back to.", "zh-CN": "想回到哪里，就在哪里放一块。" }
+    }
+  ]
+}

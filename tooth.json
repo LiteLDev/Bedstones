@@ -6,7 +6,8 @@
   "info": {
     "name": "Bedstones",
     "description": "Waystones for Minecraft Bedrock Edition: waystones, sharestones, warp plates, scrolls and the Waystones screens",
-    "tags": ["platform:levilamina", "type:mod", "server", "client"]
+    "tags": ["platform:levilamina", "type:mod", "server", "client", "category:utility", "category:game-mechanics", "teleport", "waystones"],
+    "avatar_url": "https://raw.githubusercontent.com/LiteLDev/Bedstones/main/docs/logo.png"
   },
   "variants": [
     {

@@ -13,9 +13,42 @@ Use the [issue templates](https://github.com/LiteLDev/Bedstones/issues/new/choos
 - steps to reproduce;
 - the relevant part of the server console or `logs/latest.log`.
 
-## Development setup
+## Development
 
-See [Building](README.md#building) in the README. [AGENTS.md](AGENTS.md) is the developer guide. It covers the layout of the code, the feature units and the contracts between them, the registration macros and the rules for working with Bedrock internals. Please read it before changing anything under `src/`. The behaviour reference is [docs/SPEC.md](docs/SPEC.md).
+### Building
+
+You need Windows x64, [xmake](https://xmake.io), Visual Studio Build Tools and LLVM (`clang-cl`).
+
+```powershell
+git config --global core.longpaths true
+pwsh tools/build.ps1 -Target all -Tests     # bin/server/Bedstones/ and bin/client/Bedstones/, plus unit tests
+pwsh tools/build.ps1 -Target client         # one platform only
+```
+
+One code base builds both the dedicated-server mod and the client mod (`--target_type=server|client`). The mod version comes from the latest `v*` git tag.
+
+### Tests
+
+- Unit tests (`src/core`): `xmake build -y bs-tests; xmake run bs-tests`.
+- In-game selftests: `/waystones selftest ["glob"]` (operator or server console).
+- End-to-end: [tools/e2e](tools/e2e/README.md) runs the real server and client, headless through [LeviHeadlessInput](https://github.com/LiteLDev/LeviHeadlessInput). The `showcase` client scenario re-shoots the screenshots and videos in [docs/showcase](docs/showcase/) (listed in `showcase.json` for the LeviMC Mods gallery). It saves PNGs and the teleport clip's frames (with their real durations) to `tools/e2e/client/out/showcase/`; encode them with ffmpeg, for example:
+
+  ```powershell
+  ffmpeg -i waystone.png -c:v libwebp -quality 85 docs/showcase/waystone.webp
+  cd frames-teleport
+  ffmpeg -f concat -safe 0 -i frames.txt -vf "fps=30,format=yuv420p" -c:v libx264 -crf 26 -movflags +faststart -an teleport.mp4
+  ffmpeg -f concat -safe 0 -i frames.txt -vf "trim=0.3:7.8,setpts=PTS-STARTPTS,fps=12,scale=720:405" -c:v libwebp -quality 42 -loop 0 teleport.webp   # README
+  ```
+
+### Architecture and behaviour reference
+
+- [AGENTS.md](AGENTS.md) is the developer guide: the layout of the code, the feature units and the contracts between them, the registration macros and the rules for working with Bedrock internals. Please read it before changing anything under `src/`.
+- [docs/SPEC.md](docs/SPEC.md) describes the Waystones behaviour Bedstones reproduces (blocks, items, mechanics, every screen, configuration, commands, strings).
+- Bedstones copies no code or assets from Waystones. Its textures are original pixel art drawn by `tools/textures/*.ps1`.
+
+### Maintainers
+
+[@futrime (Zijian Zhang)](https://github.com/futrime)
 
 ## Pull requests
 
