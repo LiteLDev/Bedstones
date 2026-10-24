@@ -249,8 +249,6 @@ $materials = @{
 }
 # Bedrock block sound per style (Java: STONE, DEEPSLATE, NETHER_BRICKS, MUD_BRICKS).
 $sounds = @{ 'deepslate_waystone' = 'deepslate'; 'red_nether_bricks_waystone' = 'nether_brick'; 'mud_bricks_waystone' = 'mud_bricks' }
-# Pickaxe tiers: Java mining speeds (wood 2, stone 4, iron 6, diamond 8, netherite 9, gold 12).
-$tiers = [ordered]@{ wooden = 2; stone = 4; iron = 6; diamond = 8; netherite = 9; golden = 12 }
 
 function Write-Json($obj, [string]$rel) {
     $p = Join-Path $root $rel
@@ -266,9 +264,6 @@ foreach ($name in $styles.Keys) {
     $terrain[$tex] = @{ textures = "textures/blocks/waystone/$name" }
     $blocksRp[$id] = @{ sound = $(if ($sounds.Contains($name)) { $sounds[$name] } else { 'stone' }) }
     $material = @{ '*' = [ordered]@{ texture = $tex; render_method = 'opaque' } }
-    $speeds = @(foreach ($t in $tiers.Keys) {
-            [ordered]@{ item = @{ tags = "q.all_tags('minecraft:is_pickaxe', 'minecraft:$($t)_tier')" }; destroy_speed = $tiers[$t] }
-        })
     $permutations = @(
         @{ condition = "q.block_state('bedstones:facing') == 0"; components = @{ 'minecraft:transformation' = @{ rotation = @(0, 180, 0) } } },
         @{ condition = "q.block_state('bedstones:facing') == 1"; components = @{ 'minecraft:transformation' = @{ rotation = @(0, 90, 0) } } },
@@ -298,7 +293,10 @@ foreach ($name in $styles.Keys) {
                 'minecraft:item_visual'               = [ordered]@{ geometry = 'geometry.bedstones_waystone_item'; material_instances = $material }
                 'minecraft:collision_box'             = @{ origin = @(-7, 0, -7); size = @(14, 16, 14) }
                 'minecraft:selection_box'             = @{ origin = @(-8, 0, -8); size = @(16, 16, 16) }
-                'minecraft:destructible_by_mining'    = [ordered]@{ seconds_to_destroy = 5; item_specific_speeds = $speeds }
+                'minecraft:destructible_by_mining'    = @{ seconds_to_destroy = 5 }
+                # Pickaxes mine it at their tier speed (Java: hardness 5, pickaxe tool).
+                'tag:stone'                           = @{}
+                'tag:minecraft:is_pickaxe_item_destructible' = @{}
                 'minecraft:destructible_by_explosion' = @{ explosion_resistance = 2000 }
                 'minecraft:movable'                   = @{ movement_type = 'immovable' }
                 'minecraft:loot'                      = "loot_tables/blocks/$name.json"

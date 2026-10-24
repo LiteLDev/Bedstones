@@ -3,7 +3,7 @@
 #   2. a waystone set by a command (no record yet) is activated by a right-click (chat message)
 #   3. the next right-click opens the selection menu
 #   4. breaking it with a pickaxe removes both halves and the record
-# Screenshots: out/waystone/{edit_after_place,placed,placed_side,activated,selection,broken}.png
+# Screenshots: out/waystone/{edit_after_place,placed,placed_side,activated,selection,mining,broken}.png
 Wait-LogLine 'companion: server ready' 60 | Out-Null
 Invoke-Chat '/gamemode survival'
 Invoke-Chat '/clear @s'
@@ -53,24 +53,14 @@ Save-Screenshot 'selection' | Out-Null
 Close-Screen
 Start-Sleep -Milliseconds 500
 
-# 4. Break it with the diamond pickaxe: survival first (hold the left button). Headless input may
-#    not keep a held button down long enough to mine; then break it in creative with one click
-#    (still through the player-break path: "by <player>").
+# 4. Break it with the diamond pickaxe in survival (hold the left button; hardness 5 with the
+#    pickaxe tier speed: under a second with diamond).
 Press-Key '2'
 Start-Sleep -Milliseconds 300
 $mark = Get-LogMark
-[BsE2E.Native]::MouseButton(0, $false); Start-Sleep -Seconds 4; [BsE2E.Native]::MouseButton(0, $true)
-try {
-    $removed = Wait-LogLine 'waystone removed: .+ by ' 6 -Since $mark
-    Write-Step "removed in survival: $removed"
-} catch {
-    Write-Step "survival mining did not finish with headless input; breaking in creative"
-    Invoke-Chat '/gamemode creative'
-    Start-Sleep -Seconds 1
-    $mark = Get-LogMark
-    Click 0.5 0.5 -Relative
-    $removed = Wait-LogLine 'waystone removed: .+ by ' 15 -Since $mark
-    Write-Step "removed in creative: $removed"
-}
+[BsE2E.Native]::MouseButton(0, $false); Start-Sleep -Milliseconds 400; Save-Screenshot 'mining' | Out-Null
+Start-Sleep -Milliseconds 2100; [BsE2E.Native]::MouseButton(0, $true)
+$removed = Wait-LogLine 'waystone removed: .+ by ' 6 -Since $mark
+Write-Step "removed in survival: $removed"
 Start-Sleep -Seconds 1
 Save-Screenshot 'broken' | Out-Null

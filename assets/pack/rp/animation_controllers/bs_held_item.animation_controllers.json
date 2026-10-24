@@ -1,0 +1,28 @@
+{
+  "format_version": "1.10.0",
+  "animation_controllers": {
+    "controller.animation.bs_held_item.first_person": {
+      "initial_state": "hold",
+      "states": {
+        "hold": {
+          "transitions": [
+            {
+              "charge": "q.is_using_item"
+            }
+          ]
+        },
+        "charge": {
+          "animations": [
+            "first_person_wield",
+            "first_person_pull"
+          ],
+          "transitions": [
+            {
+              "hold": "!q.is_using_item"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

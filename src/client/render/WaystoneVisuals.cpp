@@ -9,10 +9,12 @@
 // client-only particle effects from our resource pack (`particles/bs_visuals_*.json`), spawned
 // straight into the client level (client/render/ClientParticles.h): flat quads oriented by a
 // Molang direction, tinted by Molang colour variables, without the lighting component (meant to be
-// full-bright) or with it (`disableTextGlow`). Note: measured in 1.26.51, every particle (also
-// vanilla ones such as the end rod) takes the world's light, so both variants currently look the
-// same in the dark; real full-bright needs a renderer hook. They are respawned with overlapping
-// lifetimes (alpha-tested, so the overlap is invisible) so they look continuous. Nothing touches block states, and only this player sees them, which
+// glowing) or with it (`disableTextGlow`). Bedrock 1.26 lights every alpha-blended particle with
+// the world's light, so the glowing variant uses additive blending (`particles_add`): it adds its
+// colour on top of whatever is behind, which reads as glowing in the dark. Its copies live two
+// respawn intervals and cross-fade (in over the first half, out over the second), so two
+// overlapping copies always sum to full brightness without flicker. The lit variant is
+// alpha-tested and respawned with a short overlap. Nothing touches block states, and only this player sees them, which
 // makes the runes per-player (activation-dependent) like Waystones' block entity renderer.
 //
 // The data comes from the server's `visuals.waystones` sync (feature/visuals/VisualsSync.h).
@@ -67,7 +69,8 @@ constexpr char const* kPortal       = "minecraft:portal_reverse_particle";
 constexpr char const* kEnchant      = "minecraft:enchanting_table_particle";
 
 constexpr int   kRuneEvery     = 10;   ///< ticks between rune respawns
-constexpr float kRuneLife      = 0.6f; ///< seconds (overlaps the next respawn)
+constexpr float kRuneLife      = 0.6f; ///< seconds, lit variant (overlaps the next respawn)
+constexpr float kRuneGlowLife  = 1.0f; ///< seconds, glowing variant: two respawn intervals (cross-fade)
 constexpr int   kFloatEvery    = 20;
 constexpr float kFloatLife     = 1.1f;
 constexpr int   kPortstoneScan = 40;   ///< ticks between portstone scans
@@ -91,7 +94,8 @@ State gState; // client thread
 void reset() { gState = State{}; }
 
 void spawnRunes(Level& level, core::GlobalPos const& pos, cv::RuneKind kind, std::uint32_t color) {
-    auto const* effect = config::get<ClientConfig>().disableTextGlow ? kRuneLit : kRuneGlow;
+    bool        lit    = config::get<ClientConfig>().disableTextGlow;
+    auto const* effect = lit ? kRuneLit : kRuneGlow;
     float       r = ((color >> 16) & 0xFF) / 255.f, g = ((color >> 8) & 0xFF) / 255.f, b = (color & 0xFF) / 255.f;
     float       u = static_cast<float>(static_cast<int>(kind) * cv::kRuneCellWidth);
     for (auto const& q : cv::runeQuads(pos)) {
@@ -106,7 +110,7 @@ void spawnRunes(Level& level, core::GlobalPos const& pos, cv::RuneKind kind, std
                 {"bs_g",    g                       },
                 {"bs_b",    b                       },
                 {"bs_u",    u                       },
-                {"bs_life", kRuneLife               },
+                {"bs_life", lit ? kRuneLife : kRuneGlowLife},
         }
         );
     }

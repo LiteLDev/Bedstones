@@ -22,6 +22,7 @@
 #include "client/ui/widgets/Style.h"
 #include "client/ui/widgets/Tooltip.h"
 #include "client/ui/widgets/Widgets.h"
+#include "core/warpplate/WarpPlateLogic.h"
 #include "core/modifiers/Modifiers.h"
 #include "game/Items.h"
 #include "mod/Log.h"
@@ -231,18 +232,12 @@ private:
         return nullptr;
     }
 
-    /// The galactic identifier right-aligned at (right, y), 3x5 glyphs scaled to the font height.
+    /// The galactic identifier right-aligned at (right, y), in the Standard Galactic glyphs of the
+    /// resource pack's font page E1 (the game font draws them).
     void drawGalactic(Painter& p, float right, float y) const {
         if (mGalactic.empty()) return;
-        constexpr float kScale = 1.5f, kAdvance = 4 * kScale;
-        float           x      = right - kAdvance * static_cast<float>(mGalactic.size()) + kScale;
-        auto            hex    = std::format("X={:06X}", mGalacticColor);
-        for (char c : mGalactic) {
-            PixelArt glyph = icons::galacticGlyph(c);
-            glyph.palette  = {hex};
-            p.pixels(glyph, x, y, kScale, Painter::Layer::Foreground);
-            x += kAdvance;
-        }
+        auto text = core::warpplate::galacticText(mGalactic);
+        p.text(text, right - p.textWidth(text), y, Color::rgb(mGalacticColor), false);
     }
 
     std::array<std::optional<ShownItem>, cm::kContainerSlots> mContainer{};

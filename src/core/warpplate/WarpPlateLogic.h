@@ -20,6 +20,10 @@ inline constexpr int kAttunementTicks = 30;
 /// The plate's galactic identifier: the uid without digits and dashes, first 8 characters.
 [[nodiscard]] std::string galacticIdentifier(std::string_view uid);
 
+/// `text` in the Standard Galactic glyphs of the resource pack's font page E1 (font/glyph_E1.png,
+/// tools/textures/galactic.ps1): letters a-z become U+E161..U+E17A (UTF-8), other characters stay.
+[[nodiscard]] std::string galacticText(std::string_view text);
+
 /// `|hash| % 15` of the identifier (0..14; Java's Math.abs keeps INT_MIN negative -> 7, gray).
 [[nodiscard]] int colorIndex(std::string_view identifier);
 

@@ -106,6 +106,16 @@ The settings are JSON files in the mod's `config/` folder (`plugins/Bedstones/co
 | `client.json` | `disableTextGlow` (client mod) |
 | `mod.json` | Language, use each player's language, require the resource pack |
 
+## Differences from the Java mod
+
+Bedrock has no equivalent for a few Java features, so Bedstones does the following instead:
+
+- **Teams.** Bedrock has no scoreboard teams. A player's team is set by a `team:<name>` tag, for
+  example `/tag @s add team:builders`. "Visible to Team" waystones and the Teams group use that tag.
+- **Map mods and statistics.** JourneyMap, Dynmap, BlueMap and Jade/WTHIT have no Bedrock
+  versions, and Bedrock has no custom statistics, so those integrations and the
+  `waystones:waystone_activated` statistic are not provided.
+
 ## More
 
 More screenshots and videos: https://levimc.org/mods/github.com/LiteLDev/Bedstones/?tab=gallery
