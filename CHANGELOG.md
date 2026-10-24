@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - A logo (`docs/logo.png`), shown on [LeviMC Mods](https://levimc.org/mods/) through `avatar_url` in `tooth.json`.
+- A player-facing README, and screenshots and a video for the LeviMC Mods gallery (`docs/showcase/`).
 
 ## [0.1.0] - 2026-10-24
 
