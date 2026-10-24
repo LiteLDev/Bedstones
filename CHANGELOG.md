@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A logo (`docs/logo.png`), shown on [LeviMC Mods](https://levimc.org/mods/) through `avatar_url` in `tooth.json`.
+
 ## [0.1.0] - 2026-10-24
 
 First release. Bedstones brings the behaviour of the Java mod Waystones 21.1.46 to Minecraft Bedrock Edition 1.26.51 with LeviLamina 26.51.x. It runs on the dedicated server and on the client.

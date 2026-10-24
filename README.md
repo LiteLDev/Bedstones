@@ -1,5 +1,7 @@
 # Bedstones
 
+<img src="docs/logo.png" alt="" width="128" align="right">
+
 [![Build](https://github.com/LiteLDev/Bedstones/actions/workflows/build.yml/badge.svg)](https://github.com/LiteLDev/Bedstones/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/v/release/LiteLDev/Bedstones)](https://github.com/LiteLDev/Bedstones/releases/latest)
 [![License](https://img.shields.io/github/license/LiteLDev/Bedstones)](COPYING.LESSER)
