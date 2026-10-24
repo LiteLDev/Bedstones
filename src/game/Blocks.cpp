@@ -5,6 +5,7 @@
 #include "ll/api/service/Bedrock.h"
 
 #include "mc/deps/core/string/HashedString.h"
+#include "mc/deps/core/math/Vec3.h"
 #include "mc/world/actor/Actor.h"
 #include "mc/world/level/BlockPos.h"
 #include "mc/world/level/BlockSource.h"
@@ -141,5 +142,14 @@ core::GlobalPos globalPos(BlockSource const& region, BlockPos const& pos) {
 core::GlobalPos globalPos(int dim, BlockPos const& pos) { return {dim, pos.x, pos.y, pos.z}; }
 
 BlockPos blockPos(core::GlobalPos const& pos) { return BlockPos{pos.x, pos.y, pos.z}; }
+
+BlockPos blockPosOf(Vec3 const& pos) {
+    // the same small nudge as the game's own conversion, so 63.9999 from float maths is still 64
+    return BlockPos{
+        static_cast<int>(std::floor(pos.x + 0.001f)),
+        static_cast<int>(std::floor(pos.y + 0.001f)),
+        static_cast<int>(std::floor(pos.z + 0.001f)),
+    };
+}
 
 } // namespace bs::game

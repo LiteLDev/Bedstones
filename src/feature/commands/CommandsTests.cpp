@@ -1,5 +1,6 @@
 // Selftests of the admin commands (`/waystones selftest "commands.*"`). Test area dx 1600..1699.
 
+#include "mc/deps/core/math/Vec3.h"
 #include "mc/server/SimulatedPlayer.h"
 #include "mc/world/actor/player/Inventory.h"
 #include "mc/world/actor/player/Player.h"
@@ -270,4 +271,27 @@ BS_REGISTER_SELFTEST("commands.gui", [](Context& ctx) {
     auto& p = ctx.player();
     auto  r = cmd::gui(p, p);
     ctx.check(r.ok && r.lines.empty(), "gui opens silently");
+});
+
+BS_REGISTER_SELFTEST("commands.block_pos_rounding", [](Context& ctx) {
+    // Command positions are block corners or centres: every one maps to the block it lies in,
+    // on both sides of zero (the SDK's getBlockPos rounds toward zero: -4.5 would become -4).
+    struct Case {
+        Vec3 in;
+        int  x, y, z;
+    };
+    for (auto const& c : {
+             Case{{-4.5f, 64.0f, -0.5f}, -5, 64, -1},
+             Case{{-5.0f, -1.0f, -12.0f}, -5, -1, -12},
+             Case{{-0.2f, -0.5f, 0.0f}, -1, -1, 0},
+             Case{{4.5f, 63.9999f, 12.0f}, 4, 64, 12},
+         }) {
+        auto b = bs::game::blockPosOf(c.in);
+        ctx.check(
+            b.x == c.x && b.y == c.y && b.z == c.z,
+            "block of (" + std::to_string(c.in.x) + ", " + std::to_string(c.in.y) + ", " + std::to_string(c.in.z)
+                + "): expected " + std::to_string(c.x) + " " + std::to_string(c.y) + " " + std::to_string(c.z) + ", got "
+                + std::to_string(b.x) + " " + std::to_string(b.y) + " " + std::to_string(b.z)
+        );
+    }
 });

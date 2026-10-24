@@ -13,6 +13,7 @@
 class Block;
 class BlockPos;
 class BlockSource;
+class Vec3;
 class Player;
 class Actor;
 
@@ -64,5 +65,9 @@ bool placeRecordBlock(core::WaystoneRecord const& record);
 [[nodiscard]] core::GlobalPos globalPos(BlockSource const& region, BlockPos const& pos);
 [[nodiscard]] core::GlobalPos globalPos(int dim, BlockPos const& pos);
 [[nodiscard]] BlockPos        blockPos(core::GlobalPos const& pos);
+/// The block a command position lies in: rounded down, so -4.5 is block -5. (The SDK's inline
+/// CommandPosition::getBlockPos assigns floats to ints, which rounds toward zero and puts every
+/// negative coordinate one block off.)
+[[nodiscard]] BlockPos        blockPosOf(Vec3 const& pos);
 
 } // namespace bs::game

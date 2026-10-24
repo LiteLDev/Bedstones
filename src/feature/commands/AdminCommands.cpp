@@ -473,7 +473,7 @@ Player* singleOf(CommandSelector<Player> const& sel, CommandOrigin const& origin
 }
 
 GlobalPos posOf(CommandPosition const& pos, CommandOrigin const& origin, ::Command const& cmd) {
-    auto bp  = pos.getBlockPos(cmd.mVersion, origin, Vec3{0, 0, 0});
+    auto bp  = game::blockPosOf(pos.getPosition(cmd.mVersion, origin, Vec3{0, 0, 0}));
     int  dim = 0;
     if (auto* d = origin.getDimension()) dim = static_cast<int>(d->getDimensionId());
     return game::globalPos(dim, bp);
